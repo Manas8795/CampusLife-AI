@@ -1,0 +1,2054 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="alabaster">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CampusLife AI — Student Life Analytics & Intelligence Hub</title>
+  
+  <!-- Fonts: Outfit (Sleek modern geometric headings & numbers) & Inter (Clean, highly legible body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Animation & 3D Engines: GSAP & Three.js (local vendor builds) -->
+  <script src="/static/vendor/three.min.js"></script>
+  <script src="/static/vendor/gsap.min.js"></script>
+  <script src="/static/vendor/ScrollTrigger.min.js"></script>
+  <!-- Chart.js for Interactive High-DPI Pie Charts -->
+  <script src="/static/vendor/chart.min.js"></script>
+
+  <style>
+    /* ================= 1. MULTI-THEME DESIGN TOKENS ================= */
+    :root {
+      --sidebar-width: 280px;
+      --transition-speed: 0.25s;
+    }
+
+    /* 1. Midnight Obsidian (Default Dark) */
+    html[data-theme="midnight"] {
+      --bg: #070a14;
+      --canvas-bg: transparent;
+      --sidebar-bg: rgba(11, 16, 32, 0.92);
+      --card-bg: rgba(16, 24, 46, 0.72);
+      --card-border: rgba(255, 255, 255, 0.1);
+      --card-border-glow: rgba(99, 102, 241, 0.55);
+      --primary: #6366f1;
+      --primary-light: #818cf8;
+      --accent: #06b6d4;
+      --gold: #f59e0b;
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --badge-bg: rgba(99, 102, 241, 0.18);
+      --card-shadow: 0 14px 40px -10px rgba(0, 0, 0, 0.55);
+      --canvas-opacity: 0.95;
+      --three-c1: 0x6366f1;
+      --three-c2: 0x06b6d4;
+      --three-gold: 0xf59e0b;
+      --three-cap: 0x1e1b4b;
+      --three-book: 0x312e81;
+    }
+
+    /* 2. Alabaster Clean (Light Mode) */
+    html[data-theme="alabaster"] {
+      --bg: #f8fafc;
+      --canvas-bg: transparent;
+      --sidebar-bg: rgba(255, 255, 255, 0.94);
+      --card-bg: rgba(255, 255, 255, 0.85);
+      --card-border: #e2e8f0;
+      --card-border-glow: rgba(37, 99, 235, 0.45);
+      --primary: #2563eb;
+      --primary-light: #3b82f6;
+      --accent: #0284c7;
+      --gold: #d97706;
+      --text: #0f172a;
+      --text-muted: #475569;
+      --badge-bg: rgba(37, 99, 235, 0.12);
+      --card-shadow: 0 8px 30px -4px rgba(0, 0, 0, 0.08), 0 2px 6px -1px rgba(0, 0, 0, 0.04);
+      --canvas-opacity: 0.8;
+      --three-c1: 0x2563eb;
+      --three-c2: 0x0284c7;
+      --three-gold: 0xd97706;
+      --three-cap: 0x1e40af;
+      --three-book: 0x1d4ed8;
+    }
+
+    /* 2.1 Nordic Frost (Light Mode) */
+    html[data-theme="nordic"] {
+      --bg: #f0f9ff;
+      --canvas-bg: transparent;
+      --sidebar-bg: rgba(240, 249, 255, 0.95);
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --card-border: #bae6fd;
+      --card-border-glow: rgba(14, 165, 233, 0.45);
+      --primary: #0284c7;
+      --primary-light: #38bdf8;
+      --accent: #0ea5e9;
+      --gold: #d97706;
+      --text: #082f49;
+      --text-muted: #334155;
+      --badge-bg: rgba(2, 132, 199, 0.12);
+      --card-shadow: 0 8px 30px -4px rgba(14, 165, 233, 0.1);
+      --canvas-opacity: 0.8;
+      --three-c1: 0x0284c7;
+      --three-c2: 0x0ea5e9;
+      --three-gold: 0xd97706;
+      --three-cap: 0x0369a1;
+      --three-book: 0x0284c7;
+    }
+
+    /* 2.2 Sakura Blossom (Light Mode) */
+    html[data-theme="sakura"] {
+      --bg: #fff1f2;
+      --canvas-bg: transparent;
+      --sidebar-bg: rgba(255, 241, 242, 0.95);
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --card-border: #fecdd3;
+      --card-border-glow: rgba(244, 63, 94, 0.45);
+      --primary: #e11d48;
+      --primary-light: #fb7185;
+      --accent: #db2777;
+      --gold: #ea580c;
+      --text: #4c0519;
+      --text-muted: #701a31;
+      --badge-bg: rgba(225, 29, 72, 0.12);
+      --card-shadow: 0 8px 30px -4px rgba(244, 63, 94, 0.1);
+      --canvas-opacity: 0.8;
+      --three-c1: 0xe11d48;
+      --three-c2: 0xdb2777;
+      --three-gold: 0xea580c;
+      --three-cap: 0x9f1239;
+      --three-book: 0xbe123c;
+    }
+
+    /* 2.3 Matcha Sage (Light Mode) */
+    html[data-theme="matcha"] {
+      --bg: #f4f8f4;
+      --canvas-bg: transparent;
+      --sidebar-bg: rgba(244, 248, 244, 0.95);
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --card-border: #d1e7dd;
+      --card-border-glow: rgba(16, 185, 129, 0.45);
+      --primary: #059669;
+      --primary-light: #10b981;
+      --accent: #0d9488;
+      --gold: #d97706;
+      --text: #064e3b;
+      --text-muted: #1e3a2f;
+      --badge-bg: rgba(5, 150, 105, 0.12);
+      --card-shadow: 0 8px 30px -4px rgba(16, 185, 129, 0.1);
+      --canvas-opacity: 0.8;
+      --three-c1: 0x059669;
+      --three-c2: 0x10b981;
+      --three-gold: 0xd97706;
+      --three-cap: 0x064e3b;
+      --three-book: 0x047857;
+    }
+
+    /* 2.4 Caramel Latte (Light Mode) */
+    html[data-theme="latte"] {
+      --bg: #fdfbf7;
+      --canvas-bg: transparent;
+      --sidebar-bg: rgba(253, 251, 247, 0.95);
+      --card-bg: rgba(255, 255, 255, 0.9);
+      --card-border: #e7dfd5;
+      --card-border-glow: rgba(217, 119, 6, 0.45);
+      --primary: #d97706;
+      --primary-light: #f59e0b;
+      --accent: #b45309;
+      --gold: #d97706;
+      --text: #3f2e1e;
+      --text-muted: #574636;
+      --badge-bg: rgba(217, 119, 6, 0.12);
+      --card-shadow: 0 8px 30px -4px rgba(217, 119, 6, 0.1);
+      --canvas-opacity: 0.8;
+      --three-c1: 0xd97706;
+      --three-c2: 0xf59e0b;
+      --three-gold: 0xb45309;
+      --three-cap: 0x78350f;
+      --three-book: 0x92400e;
+    }
+
+    /* 3. Cyberpunk Neon (Vivid Dark) */
+    html[data-theme="cyberpunk"] {
+      --bg: #090314;
+      --canvas-bg: transparent;
+      --sidebar-bg: rgba(20, 9, 40, 0.92);
+      --card-bg: rgba(28, 13, 56, 0.75);
+      --card-border: rgba(236, 72, 153, 0.28);
+      --card-border-glow: rgba(236, 72, 153, 0.7);
+      --primary: #ec4899;
+      --primary-light: #f472b6;
+      --accent: #a855f7;
+      --gold: #f59e0b;
+      --text: #fdf4ff;
+      --text-muted: #d8b4fe;
+      --badge-bg: rgba(236, 72, 153, 0.22);
+      --card-shadow: 0 14px 40px -10px rgba(236, 72, 153, 0.35);
+      --canvas-opacity: 0.95;
+      --three-c1: 0xec4899;
+      --three-c2: 0xa855f7;
+      --three-gold: 0xf59e0b;
+      --three-cap: 0x4c0519;
+      --three-book: 0x581c87;
+    }
+
+    /* 4. Emerald Matrix (Bio Dark) */
+    html[data-theme="emerald"] {
+      --bg: #030d0a;
+      --canvas-bg: transparent;
+      --sidebar-bg: rgba(6, 24, 18, 0.92);
+      --card-bg: rgba(10, 36, 28, 0.75);
+      --card-border: rgba(16, 185, 129, 0.24);
+      --card-border-glow: rgba(16, 185, 129, 0.65);
+      --primary: #10b981;
+      --primary-light: #34d399;
+      --accent: #14b8a6;
+      --gold: #f59e0b;
+      --text: #f0fdf4;
+      --text-muted: #86efac;
+      --badge-bg: rgba(16, 185, 129, 0.2);
+      --card-shadow: 0 14px 40px -10px rgba(16, 185, 129, 0.3);
+      --canvas-opacity: 0.92;
+      --three-c1: 0x10b981;
+      --three-c2: 0x14b8a6;
+      --three-gold: 0xf59e0b;
+      --three-cap: 0x064e3b;
+      --three-book: 0x047857;
+    }
+
+    /* 5. Solar Sunset (Warm Amber) */
+    html[data-theme="solar"] {
+      --bg: #0c0806;
+      --canvas-bg: transparent;
+      --sidebar-bg: rgba(26, 16, 13, 0.92);
+      --card-bg: rgba(38, 22, 18, 0.75);
+      --card-border: rgba(245, 158, 11, 0.25);
+      --card-border-glow: rgba(245, 158, 11, 0.65);
+      --primary: #f59e0b;
+      --primary-light: #fbbf24;
+      --accent: #f43f5e;
+      --gold: #f59e0b;
+      --text: #fffbeb;
+      --text-muted: #fde68a;
+      --badge-bg: rgba(245, 158, 11, 0.2);
+      --card-shadow: 0 14px 40px -10px rgba(245, 158, 11, 0.3);
+      --canvas-opacity: 0.92;
+      --three-c1: 0xf59e0b;
+      --three-c2: 0xf43f5e;
+      --three-gold: 0xf59e0b;
+      --three-cap: 0x451a03;
+      --three-book: 0x78350f;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      background-color: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 17px;
+      line-height: 1.55;
+      overflow-x: hidden;
+      display: flex;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      transition: background-color var(--transition-speed), color var(--transition-speed);
+    }
+
+    h1, h2, h3, h4, .brand-title, .ui-btn, .kpi-num, .welcome-title, .panel-title, .user-name, .nav-sec-label {
+      font-family: 'Outfit', -apple-system, BlinkMacSystemFont, sans-serif;
+      letter-spacing: -0.015em;
+    }
+
+    /* ================= FULLSCREEN 3D WEBGL BACKGROUND ================= */
+    #three-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: 0;
+      pointer-events: none;
+      opacity: var(--canvas-opacity);
+      transition: opacity 0.4s ease;
+    }
+
+    /* ================= CLOSEABLE & OPENABLE SIDEBAR ================= */
+    .sidebar {
+      width: var(--sidebar-width);
+      height: 100vh;
+      position: fixed;
+      top: 0;
+      left: 0;
+      background: var(--sidebar-bg);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border-right: 1px solid var(--card-border);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px 20px 20px 20px;
+      z-index: 50;
+      transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1), background-color var(--transition-speed);
+      box-shadow: 4px 0 30px rgba(0, 0, 0, 0.08);
+      transform: translateX(0);
+    }
+
+    /* Closed State */
+    body.sidebar-closed .sidebar {
+      transform: translateX(-100%);
+    }
+
+    .brand-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      margin-bottom: 24px;
+    }
+    .brand-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .brand-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 13px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 21px;
+      font-weight: 900;
+      color: #fff;
+      box-shadow: 0 4px 18px rgba(99, 102, 241, 0.4);
+    }
+    .brand-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--text);
+    }
+    .brand-sub {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    /* Close Button Inside Sidebar */
+    .sidebar-action-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 9px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--card-border);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .sidebar-action-btn:hover {
+      background: rgba(255, 255, 255, 0.14);
+      color: var(--text);
+      transform: scale(1.08);
+    }
+    html[data-theme="alabaster"] .sidebar-action-btn {
+      background: #f1f5f9;
+      color: #475569;
+    }
+    html[data-theme="alabaster"] .sidebar-action-btn:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .nav-sec-label {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 1.1px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      padding: 12px 14px 6px 14px;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 12px 16px;
+      border-radius: 14px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 16.5px;
+      font-weight: 600;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+    }
+    .nav-item a:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.07);
+    }
+    html[data-theme="alabaster"] .nav-item a:hover {
+      background: #f1f5f9;
+    }
+    .nav-item.active a {
+      color: var(--text);
+      background: var(--badge-bg);
+      border-color: var(--card-border-glow);
+    }
+    .nav-icon {
+      font-size: 21px;
+      width: 24px;
+      text-align: center;
+    }
+    .nav-badge-pill {
+      margin-left: auto;
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 9px;
+      border-radius: 7px;
+      background: rgba(16, 185, 129, 0.18);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+
+    /* 5-Theme Switcher Box */
+    .theme-picker-card {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 15px;
+      margin-top: 16px;
+    }
+    html[data-theme="alabaster"] .theme-picker-card {
+      background: #f8fafc;
+    }
+    .theme-picker-head {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 11px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .theme-swatch-row {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+    .swatch-btn {
+      height: 28px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .swatch-btn:hover { transform: scale(1.15); }
+    .swatch-btn.active {
+      border-color: var(--text);
+      box-shadow: 0 0 12px rgba(99, 102, 241, 0.65);
+    }
+
+    /* Sentinel System Telemetry Footer */
+    .system-footer {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding-top: 18px;
+      border-top: 1px solid var(--card-border);
+    }
+    .system-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #10b981, #06b6d4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #fff;
+      font-size: 18px;
+    }
+    .system-name { font-size: 16px; font-weight: 700; color: var(--text); }
+    .system-status { font-size: 13px; color: #10b981; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+
+    /* ================= MAIN WORKSPACE CANVAS ================= */
+    .workspace-main {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      z-index: 10;
+      background: transparent;
+      transition: margin-left 0.32s cubic-bezier(0.16, 1, 0.3, 1), background-color var(--transition-speed);
+    }
+
+    body.sidebar-closed .workspace-main {
+      margin-left: 0;
+    }
+
+    /* Top Command Header Bar */
+    .top-command-bar {
+      height: 74px;
+      border-bottom: 1px solid var(--card-border);
+      background: var(--sidebar-bg);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 36px;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+    }
+
+    .breadcrumbs-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* Sidebar Toggle Button in Top Header */
+    .nav-toggle-icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 11px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .nav-toggle-icon-btn:hover {
+      background: var(--badge-bg);
+      border-color: var(--card-border-glow);
+      color: var(--primary-light);
+      transform: scale(1.05);
+    }
+    html[data-theme="alabaster"] .nav-toggle-icon-btn {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+
+    /* Floating Quick-Open Tab when Sidebar is closed */
+    .floating-sidebar-trigger {
+      position: fixed;
+      left: 18px;
+      top: 17px;
+      z-index: 60;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      background: var(--sidebar-bg);
+      color: var(--text);
+      border: 1px solid var(--card-border);
+      padding: 9px 16px;
+      border-radius: 12px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 14.5px;
+      cursor: pointer;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      transition: all 0.2s;
+    }
+    .floating-sidebar-trigger:hover {
+      transform: translateY(-2px);
+      border-color: var(--primary);
+      box-shadow: 0 6px 25px rgba(99, 102, 241, 0.35);
+    }
+    body.sidebar-closed .floating-sidebar-trigger {
+      display: inline-flex;
+    }
+
+    .breadcrumbs {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .breadcrumbs span.current {
+      color: var(--text);
+      font-weight: 800;
+    }
+
+    .header-btns {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .ui-btn {
+      padding: 11px 22px;
+      border-radius: 14px;
+      font-size: 15.5px;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+    .ui-btn:active { transform: scale(0.96); }
+    .btn-call {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #fff;
+      box-shadow: 0 4px 18px rgba(239, 68, 68, 0.4);
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      color: #fff;
+      box-shadow: 0 4px 18px rgba(99, 102, 241, 0.35);
+    }
+    .btn-glass {
+      background: rgba(255, 255, 255, 0.06);
+      border-color: var(--card-border);
+      color: var(--text);
+    }
+    html[data-theme="alabaster"] .btn-glass {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+
+    /* Main Workspace Canvas Container */
+    .workspace-canvas {
+      padding: 38px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+      max-width: 1480px;
+      width: 100%;
+    }
+
+    /* Welcome Header Banner */
+    .welcome-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding-bottom: 6px;
+    }
+    .welcome-title {
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.25;
+    }
+    .welcome-desc {
+      font-size: 17.5px;
+      color: var(--text-muted);
+      margin-top: 6px;
+      line-height: 1.5;
+    }
+    .sentinel-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(16, 185, 129, 0.16);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      padding: 7px 16px;
+      border-radius: 999px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    /* 4 KPI Status Tiles: Student Life Vitality */
+    .kpi-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 22px;
+    }
+    .kpi-tile {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 20px;
+      padding: 24px 26px;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: var(--card-shadow);
+      transition: all 0.25s;
+    }
+    .kpi-tile:hover {
+      border-color: var(--card-border-glow);
+      transform: translateY(-3px);
+    }
+    .kpi-head {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .kpi-num {
+      font-size: 38px;
+      font-weight: 800;
+      color: var(--text);
+      line-height: 1.1;
+      margin-bottom: 9px;
+    }
+    .kpi-tag {
+      font-size: 14.5px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .kpi-tag.alert { color: #ef4444; }
+    .kpi-tag.good { color: #10b981; }
+    .kpi-tag.warn { color: #f59e0b; }
+    .kpi-tag.prime { color: var(--primary-light); }
+
+    /* Main 2-Column Life Analytics Board Grid */
+    .board-grid {
+      display: grid;
+      grid-template-columns: 1.15fr 1fr;
+      gap: 26px;
+    }
+
+    .canvas-panel {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 22px;
+      padding: 28px;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+    .panel-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .panel-title {
+      font-size: 21px;
+      font-weight: 800;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    /* ================= 2. REAL DATASET TELEMETRY STYLING ================= */
+    .dataset-alert-box {
+      background: rgba(99, 102, 241, 0.08);
+      border: 1px solid rgba(99, 102, 241, 0.25);
+      border-radius: 14px;
+      padding: 16px 18px;
+      margin-bottom: 20px;
+    }
+    html[data-theme="alabaster"] .dataset-alert-box {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+    }
+    .telemetry-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    .telemetry-card {
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+    html[data-theme="alabaster"] .telemetry-card {
+      background: #f8fafc;
+    }
+    .telemetry-card:hover {
+      border-color: var(--card-border-glow);
+      transform: translateY(-2px);
+    }
+    .telemetry-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .telemetry-label {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+    .telemetry-badge {
+      font-size: 11px;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+    }
+    html[data-theme="alabaster"] .telemetry-badge {
+      background: #e2e8f0;
+      color: #334155;
+    }
+    .telemetry-value {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      margin-top: 4px;
+    }
+    .telemetry-meta {
+      font-size: 12.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .schema-readiness-box {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px dashed var(--card-border);
+      border-radius: 14px;
+      padding: 16px 18px;
+    }
+    html[data-theme="alabaster"] .schema-readiness-box {
+      background: #f8fafc;
+    }
+    .schema-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .schema-tag {
+      font-size: 12px;
+      font-family: monospace;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(16, 185, 129, 0.1);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    /* Autonomous Intelligence Insights Feed */
+    .insights-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .insight-card {
+      background: rgba(255, 255, 255, 0.035);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    html[data-theme="alabaster"] .insight-card {
+      background: #f8fafc;
+    }
+    .insight-card:hover {
+      border-color: var(--card-border-glow);
+      transform: translateY(-2px);
+    }
+    .insight-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .insight-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .insight-pill {
+      font-size: 11.5px;
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: 6px;
+    }
+    .pill-high { background: rgba(239, 68, 68, 0.16); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.35); }
+    .pill-med { background: rgba(245, 158, 11, 0.16); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.35); }
+    .pill-good { background: rgba(16, 185, 129, 0.16); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.35); }
+    .insight-desc {
+      font-size: 14.5px;
+      color: var(--text-muted);
+      line-height: 1.45;
+    }
+
+    /* Sentinel Controls Box */
+    .sentinel-card {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    html[data-theme="alabaster"] .sentinel-card {
+      background: #f8fafc;
+    }
+    .sentinel-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Toast */
+    #actionToast {
+      position: fixed;
+      bottom: 28px;
+      right: 28px;
+      z-index: 999;
+      background: rgba(15, 23, 42, 0.95);
+      border: 1px solid #10b981;
+      padding: 16px 26px;
+      border-radius: 18px;
+      color: #fff;
+      font-size: 15.5px;
+      font-weight: 600;
+      display: none;
+      align-items: center;
+      gap: 14px;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.55);
+      backdrop-filter: blur(18px);
+    }
+
+    @media (max-width: 1024px) {
+      .kpi-row { grid-template-columns: repeat(2, 1fr); }
+      .board-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .kpi-row { grid-template-columns: 1fr; }
+      .workspace-canvas { padding: 24px 20px; }
+      .pie-flex-row { flex-direction: column; align-items: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fullscreen Relevant 3D Academic Background: Graduation Cap, Open Textbook, Astrolabe Rings & Stardust -->
+  <canvas id="three-canvas"></canvas>
+
+  <!-- Floating Quick-Open Tab when Sidebar is closed -->
+  <button class="floating-sidebar-trigger" onclick="toggleSidebar()" title="Open Navigation Bar" id="floatingSidebarTrigger">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+    <span>Open Menu</span>
+  </button>
+
+  <!-- ================= LEFT NAVIGATION SIDEBAR (CLOSEABLE & OPENABLE) ================= -->
+  <aside class="sidebar" id="sidebar">
+    <div>
+      <!-- Brand Capsule with Close Button -->
+      <div class="brand-box">
+        <div class="brand-left">
+          <div class="brand-icon">🎓</div>
+          <div>
+            <div class="brand-title">CampusLife AI</div>
+            <div class="brand-sub">Student Life Intelligence</div>
+          </div>
+        </div>
+        <!-- Close Bar Button -->
+        <button class="sidebar-action-btn" onclick="toggleSidebar()" title="Close Navigation Bar (Ctrl+B)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Navigation Section: Core -->
+      <div class="nav-sec-label">Workspace</div>
+      <ul class="nav-list">
+        <li class="nav-item active">
+          <a href="/">
+            <span class="nav-icon">📊</span>
+            <span>Life Analytics Hub</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/call">
+            <span class="nav-icon">📱</span>
+            <span>Phone Standby</span>
+            <span class="nav-badge-pill">LIVE CALL</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/voice">
+            <span class="nav-icon">🎙️</span>
+            <span>Voice Co-Pilot</span>
+          </a>
+        </li>
+      </ul>
+
+      <!-- Navigation Section: Academic & Life Modules -->
+      <div class="nav-sec-label" style="margin-top: 14px;">Modules</div>
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a href="/study">
+            <span class="nav-icon">📚</span>
+            <span>Academics & Tasks</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/health">
+            <span class="nav-icon">🧘</span>
+            <span>Health & Vitals</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/expenses">
+            <span class="nav-icon">💳</span>
+            <span>Budget & Runway</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/travel">
+            <span class="nav-icon">✈️</span>
+            <span>Trip Planner</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/intelligence">
+            <span class="nav-icon">🧠</span>
+            <span>Student Intelligence</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/infra">
+            <span class="nav-icon">⚙️</span>
+            <span>AI/ML Infra</span>
+          </a>
+        </li>
+      </ul>
+
+      <!-- Multi-Theme Switcher (Light & Dark Suites) -->
+      <div class="theme-picker-card">
+        <div class="theme-picker-head">
+          <span>Active Theme</span>
+          <span id="themeLabel" style="color: var(--primary-light); font-weight: 700;">Alabaster</span>
+        </div>
+        <div class="theme-picker-sublabel">Light Themes</div>
+        <div class="theme-swatch-row" style="margin-bottom: 8px;">
+          <div class="swatch-btn active" style="background: linear-gradient(135deg, #ffffff, #2563eb);" title="Alabaster Slate (Light)" onclick="switchTheme('alabaster', this, 'Alabaster')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #e0f2fe, #0284c7);" title="Nordic Frost (Light)" onclick="switchTheme('nordic', this, 'Nordic Frost')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #ffe4e6, #e11d48);" title="Sakura Blossom (Light)" onclick="switchTheme('sakura', this, 'Sakura')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #dcfce7, #059669);" title="Matcha Sage (Light)" onclick="switchTheme('matcha', this, 'Matcha')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #fef3c7, #d97706);" title="Caramel Latte (Light)" onclick="switchTheme('latte', this, 'Latte')"></div>
+        </div>
+        <div class="theme-picker-sublabel">Dark Themes</div>
+        <div class="theme-swatch-row dark-row">
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #070a14, #6366f1);" title="Midnight Obsidian (Dark)" onclick="switchTheme('midnight', this, 'Midnight')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #090314, #ec4899);" title="Cyberpunk Neon (Dark)" onclick="switchTheme('cyberpunk', this, 'Cyberpunk')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #030d0a, #10b981);" title="Emerald Matrix (Dark)" onclick="switchTheme('emerald', this, 'Emerald')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #0c0806, #f59e0b);" title="Solar Sunset (Dark)" onclick="switchTheme('solar', this, 'Solar')"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- System Telemetry Footer -->
+    <div class="system-footer">
+      <div class="system-avatar">⚡</div>
+      <div>
+        <div class="system-name">Autonomous Sentinel</div>
+        <div class="system-status">
+          <span style="font-size: 8px;">●</span> Online & Guarding
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN WORKSPACE CANVAS ================= -->
+  <main class="workspace-main">
+    
+    <!-- Top Command Header Bar with Toggle Button -->
+    <div class="top-command-bar">
+      <div class="breadcrumbs-wrap">
+        <!-- Close/Open Sidebar Toggle Button in Header -->
+        <button class="nav-toggle-icon-btn" onclick="toggleSidebar()" title="Toggle Navigation Bar (Ctrl+B)" id="topSidebarToggleBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="9" y1="3" x2="9" y2="21"></line>
+          </svg>
+        </button>
+
+        <div class="breadcrumbs">
+          <span>Workspace</span>
+          <span>/</span>
+          <span class="current">Student Life Analytics & Pulse</span>
+        </div>
+      </div>
+
+      <div class="header-btns">
+        <button class="ui-btn btn-call" onclick="triggerImmediateCall()">
+          <span>📞</span>
+          <span>Ring Phone Now</span>
+        </button>
+        <a href="/call" class="ui-btn btn-primary">
+          <span>📱</span>
+          <span>Open Phone Standby</span>
+        </a>
+        <a href="/voice" class="ui-btn btn-glass">
+          <span>🎙️</span>
+          <span>Voice Co-Pilot</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Workspace Canvas Content -->
+    <div class="workspace-canvas">
+      
+      <!-- Welcome Header Banner -->
+      <div class="welcome-header">
+        <div>
+          <h1 class="welcome-title">Student Life Analytics & Vitality Pulse</h1>
+          <p class="welcome-desc">Real-time holistic telemetry across cognitive energy, circadian sleep, financial health, and life equilibrium.</p>
+        </div>
+        <div class="sentinel-pill">
+          <span>●</span> AI Life Sentinel Active
+        </div>
+      </div>
+
+      <!-- 4 KPI Tiles: Holistic Student Life Metrics (Dynamic Real Calculations) -->
+      <div class="kpi-row">
+        
+        <div class="kpi-tile">
+          <div class="kpi-head">
+            <span>Life Equilibrium</span>
+            <span>⚖️</span>
+          </div>
+          <div class="kpi-num" id="kpiEquilibrium" style="color: #10b981;">0 / 100</div>
+          <div class="kpi-tag good">
+            <span id="kpiEquilibriumSub">● Awaiting dataset</span>
+          </div>
+        </div>
+
+        <div class="kpi-tile">
+          <div class="kpi-head">
+            <span>Sleep & Recovery</span>
+            <span>🧘</span>
+          </div>
+          <div class="kpi-num" id="kpiSleep" style="color: #06b6d4;">--</div>
+          <div class="kpi-tag prime">
+            <span id="kpiSleepSub">● No sleep logs</span>
+          </div>
+        </div>
+
+        <div class="kpi-tile">
+          <div class="kpi-head">
+            <span>Cognitive Focus Load</span>
+            <span>⚡</span>
+          </div>
+          <div class="kpi-num" id="kpiStudy" style="color: var(--primary-light);">0.0 h/day</div>
+          <div class="kpi-tag prime">
+            <span id="kpiStudySub">● No study logs</span>
+          </div>
+        </div>
+
+        <div class="kpi-tile">
+          <div class="kpi-head">
+            <span>Financial Runway</span>
+            <span>💳</span>
+          </div>
+          <div class="kpi-num" id="kpiRunway" style="color: #10b981;">₹0</div>
+          <div class="kpi-tag good">
+            <span id="kpiRunwaySub">● 0.0% budget utilized</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Main 2-Column Life Analytics Board Grid -->
+      <div class="board-grid">
+        
+        <!-- Column 1: REAL DATABASE TELEMETRY & DATASET MONITOR (100% Data-Driven) -->
+        <div class="canvas-panel">
+          <div class="panel-head">
+            <div class="panel-title">
+              <span>📊</span>
+              <span>Live Database Telemetry & Dataset Monitor</span>
+            </div>
+            <span class="sentinel-pill" id="datasetStatusPill" style="font-size: 12px; padding: 4px 11px;">AWAITING DATASET</span>
+          </div>
+
+          <!-- Dataset Status Banner -->
+          <div id="datasetAlertBanner" class="dataset-alert-box">
+            <div style="display: flex; align-items: flex-start; gap: 12px;">
+              <span style="font-size: 22px; flex-shrink: 0; margin-top: 2px;">🛡️</span>
+              <div>
+                <div style="font-weight: 700; font-size: 15px; color: var(--text);" id="dbBannerTitle">Database Clean: 0 Records (Ready for Dataset)</div>
+                <div style="font-size: 13.5px; color: var(--text-muted); line-height: 1.45; margin-top: 2px;" id="dbBannerDesc">
+                  All dummy & hardcoded data removed. The system is connected directly to your SQLite database and computes metrics solely from real records as soon as your dataset is provided.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 4 Real Dataset Stream Cards -->
+          <div class="telemetry-grid">
+            
+            <div class="telemetry-card">
+              <div class="telemetry-head">
+                <span class="telemetry-label">📚 Tasks & Deadlines</span>
+                <span class="telemetry-badge" id="telemetryTasksBadge">0 Active</span>
+              </div>
+              <div class="telemetry-value" id="telemetryTasksVal">0</div>
+              <div class="telemetry-meta" id="telemetryTasksMeta">0 Pending • 0 Completed</div>
+            </div>
+
+            <div class="telemetry-card">
+              <div class="telemetry-head">
+                <span class="telemetry-label">💳 Expense Ledger</span>
+                <span class="telemetry-badge" id="telemetryExpBadge">0 Logged</span>
+              </div>
+              <div class="telemetry-value" id="telemetryExpVal">₹0</div>
+              <div class="telemetry-meta" id="telemetryExpMeta">₹0 Budget Allocated</div>
+            </div>
+
+            <div class="telemetry-card">
+              <div class="telemetry-head">
+                <span class="telemetry-label">✈️ Travel & Expeditions</span>
+                <span class="telemetry-badge" id="telemetryTripBadge">0 Planned</span>
+              </div>
+              <div class="telemetry-value" id="telemetryTripVal">0</div>
+              <div class="telemetry-meta" id="telemetryTripMeta">0 Upcoming Itineraries</div>
+            </div>
+
+            <div class="telemetry-card">
+              <div class="telemetry-head">
+                <span class="telemetry-label">🧘 Health & Circadian</span>
+                <span class="telemetry-badge" id="telemetryHealthBadge">0 Logs</span>
+              </div>
+              <div class="telemetry-value" id="telemetryHealthVal">--</div>
+              <div class="telemetry-meta" id="telemetryHealthMeta">Avg Sleep: 0.0 hrs</div>
+            </div>
+
+          </div>
+
+          <!-- Dataset Schema Readiness Checklist -->
+          <div class="schema-readiness-box">
+            <div style="font-size: 13.5px; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 8px;">
+              <span>⚡ Verified Real Database Tables</span>
+              <span style="font-size: 11.5px; color: var(--text-muted); font-weight: 500;">(Ready for CSV / Dataset)</span>
+            </div>
+            <div class="schema-tags">
+              <span class="schema-tag">✓ tasks</span>
+              <span class="schema-tag">✓ expenses</span>
+              <span class="schema-tag">✓ budgets</span>
+              <span class="schema-tag">✓ trips</span>
+              <span class="schema-tag">✓ health_records</span>
+              <span class="schema-tag">✓ study_plans</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Column 2: Autonomous Intelligence Insights & Life Sentinel -->
+        <div class="canvas-panel">
+          <div class="panel-head">
+            <div class="panel-title">
+              <span>🧠</span>
+              <span>AI Life Intelligence & Interventions</span>
+            </div>
+            <span class="sentinel-pill" style="padding: 4px 11px; font-size: 12.5px;">LIVE TELEMETRY</span>
+          </div>
+
+          <!-- Dynamic Intelligence Insights Feed (100% Data-Driven) -->
+          <div class="insights-feed" id="insightsContainer">
+            <div class="insight-card">
+              <div class="insight-head">
+                <span class="insight-title"><span>📊</span> Telemetry Status: Clean Baseline</span>
+                <span class="insight-pill pill-good">READY</span>
+              </div>
+              <p class="insight-desc">All user data has been cleared. The system is standing by to compute real metrics dynamically as soon as you provide or import your dataset.</p>
+            </div>
+          </div>
+
+          <!-- Autonomous Co-Pilot Calling Sentinel Box -->
+          <div class="sentinel-card">
+            <div class="sentinel-title">
+              <span>Autonomous Proactive Calling Protocol</span>
+              <span style="color: #10b981; font-size: 13.5px; font-weight: 700;">ARMED (Sentinel Active)</span>
+            </div>
+            <p style="font-size: 14.5px; color: var(--text-muted); line-height: 1.45;">
+              If compound cognitive overload exceeds 85% or acute sleep deficit coincides with critical obligations, CampusLife AI automatically dials your connected phone to intervene.
+            </p>
+
+            <div style="display: flex; gap: 12px; margin-top: 6px;">
+              <button class="ui-btn btn-call" style="flex: 1; justify-content: center;" onclick="triggerImmediateCall()">
+                <span>📞</span> Test Phone Ring
+              </button>
+              <a href="/call" class="ui-btn btn-glass" style="flex: 1; justify-content: center;">
+                <span>📱</span> Phone Standby
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Toast Notification -->
+  <div id="actionToast">
+    <span id="toastIcon">🔔</span>
+    <span id="toastMsg">Notification message</span>
+  </div>
+
+  <script>
+    // ================= 1. SIDEBAR OPEN / CLOSE CONTROLLER =================
+    function toggleSidebar() {
+      document.body.classList.toggle('sidebar-closed');
+      const isClosed = document.body.classList.contains('sidebar-closed');
+      localStorage.setItem('campuslife_sidebar_closed', isClosed ? 'true' : 'false');
+      showToast(isClosed ? 'Navigation bar closed' : 'Navigation bar opened', isClosed ? '◀' : '▶');
+
+      // Refresh Three.js canvas size smoothly
+      if (camera && renderer) {
+        setTimeout(() => {
+          camera.aspect = window.innerWidth / window.innerHeight;
+          camera.updateProjectionMatrix();
+          renderer.setSize(window.innerWidth, window.innerHeight);
+        }, 340);
+      }
+    }
+
+    // Keyboard shortcut: Ctrl+B or Cmd+B
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+        e.preventDefault();
+        toggleSidebar();
+      }
+    });
+
+    // Restore user preference
+    if (localStorage.getItem('campuslife_sidebar_closed') === 'true') {
+      document.body.classList.add('sidebar-closed');
+    }
+
+    // ================= 2. RELEVANT 3D ACADEMIC WEBGL BACKGROUND =================
+    let scene, camera, renderer;
+    let academicCapGroup, capBoard, capMat, goldMat;
+    let tasselNode1, tasselNode2;
+    let openBookGroup, bookCoverMat, bookPageMat;
+    let diplomaGroup, diplomaMat, diplomaRibbonMat;
+    let orbitRing1, orbitRing2, orbitRing3;
+    let milestoneNodes = [];
+    let campusStars;
+    let mouseLight;
+    let targetMouseX = 0, targetMouseY = 0;
+    let curMouseX = 0, curMouseY = 0;
+
+    const THEME_3D_COLORS = {
+      midnight: {
+        primary: 0x6366f1,
+        accent: 0x06b6d4,
+        gold: 0xf59e0b,
+        cap: 0x1e1b4b,
+        book: 0x312e81,
+        diploma: 0xf8fafc,
+        stars: 0x818cf8,
+        light: 0x818cf8
+      },
+      alabaster: {
+        primary: 0x2563eb,
+        accent: 0x0284c7,
+        gold: 0xd97706,
+        cap: 0x1e40af,
+        book: 0x1d4ed8,
+        diploma: 0xffffff,
+        stars: 0x64748b,
+        light: 0x3b82f6
+      },
+      nordic: {
+        primary: 0x0284c7,
+        accent: 0x0ea5e9,
+        gold: 0xd97706,
+        cap: 0x0369a1,
+        book: 0x0284c7,
+        diploma: 0xf0f9ff,
+        stars: 0x38bdf8,
+        light: 0x38bdf8
+      },
+      sakura: {
+        primary: 0xe11d48,
+        accent: 0xdb2777,
+        gold: 0xea580c,
+        cap: 0x9f1239,
+        book: 0xbe123c,
+        diploma: 0xfff1f2,
+        stars: 0xfb7185,
+        light: 0xfb7185
+      },
+      matcha: {
+        primary: 0x059669,
+        accent: 0x0d9488,
+        gold: 0xd97706,
+        cap: 0x064e3b,
+        book: 0x047857,
+        diploma: 0xf0fdf4,
+        stars: 0x10b981,
+        light: 0x10b981
+      },
+      latte: {
+        primary: 0xd97706,
+        accent: 0xb45309,
+        gold: 0xf59e0b,
+        cap: 0x78350f,
+        book: 0x92400e,
+        diploma: 0xfef3c7,
+        stars: 0xf59e0b,
+        light: 0xf59e0b
+      },
+      cyberpunk: {
+        primary: 0xec4899,
+        accent: 0xa855f7,
+        gold: 0xf59e0b,
+        cap: 0x4c0519,
+        book: 0x581c87,
+        diploma: 0xfdf4ff,
+        stars: 0xa855f7,
+        light: 0xec4899
+      },
+      emerald: {
+        primary: 0x10b981,
+        accent: 0x14b8a6,
+        gold: 0xf59e0b,
+        cap: 0x064e3b,
+        book: 0x047857,
+        diploma: 0xf0fdf4,
+        stars: 0x34d399,
+        light: 0x10b981
+      },
+      solar: {
+        primary: 0xf59e0b,
+        accent: 0xf43f5e,
+        gold: 0xfbbf24,
+        cap: 0x451a03,
+        book: 0x78350f,
+        diploma: 0xfffbeb,
+        stars: 0xf59e0b,
+        light: 0xf59e0b
+      }
+    };
+
+    function initAcademic3DScene() {
+      const canvas = document.getElementById('three-canvas');
+      scene = new THREE.Scene();
+
+      camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 1, 3000);
+      camera.position.z = 540;
+
+      renderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      // Lights
+      const ambLight = new THREE.AmbientLight(0xffffff, 1.1);
+      scene.add(ambLight);
+
+      const dirLight = new THREE.DirectionalLight(0xffffff, 1.4);
+      dirLight.position.set(300, 400, 350);
+      scene.add(dirLight);
+
+      mouseLight = new THREE.PointLight(0x3b82f6, 2.0, 800);
+      mouseLight.position.set(0, 0, 300);
+      scene.add(mouseLight);
+
+      goldMat = new THREE.MeshStandardMaterial({ color: 0xd97706, metalness: 0.9, roughness: 0.15 });
+      capMat = new THREE.MeshStandardMaterial({ color: 0x1e40af, roughness: 0.25, metalness: 0.7 });
+      bookCoverMat = new THREE.MeshStandardMaterial({ color: 0x1d4ed8, roughness: 0.35, metalness: 0.5 });
+      bookPageMat = new THREE.MeshStandardMaterial({ color: 0xf1f5f9, roughness: 0.6, metalness: 0.1 });
+      diplomaMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.4, metalness: 0.2 });
+      diplomaRibbonMat = new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.2, metalness: 0.7 });
+
+      // 1. Academic Graduation Cap
+      academicCapGroup = new THREE.Group();
+      const boardGeo = new THREE.BoxGeometry(110, 5, 110);
+      capBoard = new THREE.Mesh(boardGeo, capMat);
+      capBoard.rotation.y = Math.PI / 4;
+      academicCapGroup.add(capBoard);
+
+      // Skull cap underneath
+      const skullGeo = new THREE.CylinderGeometry(40, 52, 32, 32);
+      const skullMesh = new THREE.Mesh(skullGeo, capMat);
+      skullMesh.position.y = -18;
+      academicCapGroup.add(skullMesh);
+
+      const buttonGeo = new THREE.SphereGeometry(6, 20, 20);
+      const buttonMesh = new THREE.Mesh(buttonGeo, goldMat);
+      buttonMesh.position.y = 4;
+      academicCapGroup.add(buttonMesh);
+
+      tasselNode1 = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.4, 25, 12), goldMat);
+      tasselNode1.position.set(18, -4, 18);
+      tasselNode1.rotation.z = Math.PI / 4;
+      academicCapGroup.add(tasselNode1);
+
+      tasselNode2 = new THREE.Mesh(new THREE.CylinderGeometry(2.5, 4.5, 26, 16), goldMat);
+      tasselNode2.position.set(34, -22, 34);
+      academicCapGroup.add(tasselNode2);
+
+      academicCapGroup.position.set(290, 80, -30);
+      academicCapGroup.rotation.x = 0.35;
+      scene.add(academicCapGroup);
+
+      // 2. Astrolabe Rings & Satellites
+      const ringMat1 = new THREE.MeshBasicMaterial({ color: 0x2563eb, transparent: true, opacity: 0.45 });
+      orbitRing1 = new THREE.Mesh(new THREE.TorusGeometry(190, 1.6, 16, 120), ringMat1);
+      orbitRing1.position.copy(academicCapGroup.position);
+      orbitRing1.rotation.x = Math.PI / 2.4;
+      scene.add(orbitRing1);
+
+      const ringMat2 = new THREE.MeshBasicMaterial({ color: 0x0284c7, transparent: true, opacity: 0.38 });
+      orbitRing2 = new THREE.Mesh(new THREE.TorusGeometry(240, 1.2, 16, 120), ringMat2);
+      orbitRing2.position.copy(academicCapGroup.position);
+      orbitRing2.rotation.y = Math.PI / 3.2;
+      scene.add(orbitRing2);
+
+      const ringMat3 = new THREE.MeshBasicMaterial({ color: 0xd97706, transparent: true, opacity: 0.3 });
+      orbitRing3 = new THREE.Mesh(new THREE.TorusGeometry(280, 1.0, 16, 120), ringMat3);
+      orbitRing3.position.copy(academicCapGroup.position);
+      orbitRing3.rotation.z = Math.PI / 4;
+      scene.add(orbitRing3);
+
+      const colors4 = [0x6366f1, 0x10b981, 0xf59e0b, 0x06b6d4];
+      for (let i = 0; i < 4; i++) {
+        const nodeMesh = new THREE.Mesh(
+          new THREE.SphereGeometry(6, 16, 16),
+          new THREE.MeshStandardMaterial({ color: colors4[i], roughness: 0.2, metalness: 0.8, emissive: colors4[i], emissiveIntensity: 0.4 })
+        );
+        scene.add(nodeMesh);
+        milestoneNodes.push(nodeMesh);
+      }
+
+      // 3. Open Knowledge Textbook
+      openBookGroup = new THREE.Group();
+      const leftCover = new THREE.Mesh(new THREE.BoxGeometry(45, 2.5, 60), bookCoverMat);
+      leftCover.position.set(-22, -1, 0);
+      leftCover.rotation.z = 0.22;
+      openBookGroup.add(leftCover);
+
+      const rightCover = new THREE.Mesh(new THREE.BoxGeometry(45, 2.5, 60), bookCoverMat);
+      rightCover.position.set(22, -1, 0);
+      rightCover.rotation.z = -0.22;
+      openBookGroup.add(rightCover);
+
+      const spine = new THREE.Mesh(new THREE.CylinderGeometry(3.5, 3.5, 60, 16, 1, false, 0, Math.PI), bookCoverMat);
+      spine.rotation.x = Math.PI / 2;
+      spine.position.set(0, -3.5, 0);
+      openBookGroup.add(spine);
+
+      const leftPages = new THREE.Mesh(new THREE.BoxGeometry(42, 3, 56), bookPageMat);
+      leftPages.position.set(-21, 1, 0);
+      leftPages.rotation.z = 0.16;
+      openBookGroup.add(leftPages);
+
+      const rightPages = new THREE.Mesh(new THREE.BoxGeometry(42, 3, 56), bookPageMat);
+      rightPages.position.set(21, 1, 0);
+      rightPages.rotation.z = -0.16;
+      openBookGroup.add(rightPages);
+
+      openBookGroup.position.set(-260, -110, -70);
+      openBookGroup.rotation.x = 0.45;
+      openBookGroup.rotation.y = 0.4;
+      scene.add(openBookGroup);
+
+      // 4. Diploma Parchment Scroll
+      diplomaGroup = new THREE.Group();
+      const scrollBody = new THREE.Mesh(new THREE.CylinderGeometry(14, 14, 90, 28), diplomaMat);
+      scrollBody.rotation.z = Math.PI / 3;
+      diplomaGroup.add(scrollBody);
+
+      const ribbon = new THREE.Mesh(new THREE.CylinderGeometry(14.8, 14.8, 14, 28), diplomaRibbonMat);
+      ribbon.rotation.z = Math.PI / 3;
+      diplomaGroup.add(ribbon);
+
+      const seal = new THREE.Mesh(new THREE.CylinderGeometry(7, 7, 3, 20), goldMat);
+      seal.rotation.x = Math.PI / 2;
+      seal.position.set(3, 4, 13);
+      diplomaGroup.add(seal);
+
+      diplomaGroup.position.set(-240, 160, -90);
+      diplomaGroup.rotation.x = 0.3;
+      scene.add(diplomaGroup);
+
+      // 5. Stardust Particles
+      const starCount = 1200;
+      const starGeo = new THREE.BufferGeometry();
+      const starPos = new Float32Array(starCount * 3);
+      for (let i = 0; i < starCount; i++) {
+        starPos[i * 3] = (Math.random() - 0.5) * 1900;
+        starPos[i * 3 + 1] = (Math.random() - 0.5) * 1400;
+        starPos[i * 3 + 2] = (Math.random() - 0.5) * 900;
+      }
+      starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+      const starMat = new THREE.PointsMaterial({ size: 2.4, color: 0x64748b, transparent: true, opacity: 0.5 });
+      campusStars = new THREE.Points(starGeo, starMat);
+      scene.add(campusStars);
+
+      const raycaster = new THREE.Raycaster();
+      const mouseVec = new THREE.Vector2();
+
+      window.addEventListener('mousemove', (e) => {
+        targetMouseX = (e.clientX - window.innerWidth / 2) * 0.06;
+        targetMouseY = (e.clientY - window.innerHeight / 2) * 0.06;
+      });
+
+      window.addEventListener('click', (e) => {
+        if (e.target.closest('button, a, input, select, .card, .swatch-btn, .sidebar, .pill-btn')) return;
+        mouseVec.x = (e.clientX / window.innerWidth) * 2 - 1;
+        mouseVec.y = -(e.clientY / window.innerHeight) * 2 + 1;
+        raycaster.setFromCamera(mouseVec, camera);
+
+        const targets = [
+          { group: academicCapGroup, toast: '🎓 Academic Focus Boost Activated!' },
+          { group: openBookGroup, toast: '📖 Coursework & Study Corpus Synced!' },
+          { group: diplomaGroup, toast: '📜 Graduation Readiness: 86% Tracked!' }
+        ];
+
+        for (const t of targets) {
+          if (!t.group) continue;
+          const hits = raycaster.intersectObjects(t.group.children, true);
+          if (hits.length > 0) {
+            if (window.gsap) {
+              gsap.to(t.group.rotation, { y: t.group.rotation.y + Math.PI * 2, duration: 1.0, ease: 'back.out(1.5)' });
+              gsap.to(t.group.position, { y: t.group.position.y + 25, yoyo: true, repeat: 1, duration: 0.45 });
+            }
+            showToast(t.toast, '✨');
+            break;
+          }
+        }
+      });
+
+      window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      });
+
+      animate3D();
+    }
+
+    let clockTime = 0;
+    function animate3D() {
+      requestAnimationFrame(animate3D);
+      clockTime += 0.016;
+
+      curMouseX += (targetMouseX - curMouseX) * 0.05;
+      curMouseY += (targetMouseY - curMouseY) * 0.05;
+
+      camera.position.x = curMouseX * 0.45;
+      camera.position.y = -curMouseY * 0.45;
+      camera.lookAt(0, 0, 0);
+
+      if (mouseLight) {
+        mouseLight.position.x = curMouseX * 4.5;
+        mouseLight.position.y = -curMouseY * 4.5;
+      }
+
+      if (academicCapGroup) {
+        academicCapGroup.rotation.y += 0.0035;
+        academicCapGroup.position.y = 80 + Math.sin(clockTime * 1.3) * 12;
+
+        orbitRing1.position.y = academicCapGroup.position.y;
+        orbitRing2.position.y = academicCapGroup.position.y;
+        orbitRing3.position.y = academicCapGroup.position.y;
+
+        orbitRing1.rotation.z += 0.007;
+        orbitRing2.rotation.y += 0.005;
+        orbitRing3.rotation.x += 0.004;
+
+        if (tasselNode2) {
+          tasselNode2.rotation.z = Math.sin(clockTime * 2.5) * 0.15;
+          tasselNode2.rotation.x = Math.cos(clockTime * 2.1) * 0.12;
+        }
+
+        if (milestoneNodes.length === 4) {
+          for (let i = 0; i < 4; i++) {
+            const angle = clockTime * 0.8 + (i * Math.PI / 2);
+            const r = 210;
+            milestoneNodes[i].position.x = academicCapGroup.position.x + Math.cos(angle) * r;
+            milestoneNodes[i].position.y = academicCapGroup.position.y + Math.sin(angle * 0.7) * 45;
+            milestoneNodes[i].position.z = academicCapGroup.position.z + Math.sin(angle) * r;
+          }
+        }
+      }
+
+      if (openBookGroup) {
+        openBookGroup.rotation.y += 0.0028;
+        openBookGroup.position.y = -110 + Math.cos(clockTime * 1.1) * 9;
+      }
+
+      if (diplomaGroup) {
+        diplomaGroup.rotation.y += 0.004;
+        diplomaGroup.position.y = 160 + Math.sin(clockTime * 1.4) * 8;
+      }
+
+      if (campusStars) {
+        campusStars.rotation.y += 0.00035;
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    // ================= 3. PIE CHARTS CONTROLLER =================
+    let timePieChart, energyPieChart;
+
+    const PIE_THEME_COLORS = {
+      midnight: {
+        time: ['#6366f1', '#06b6d4', '#10b981', '#f59e0b'],
+        energy: ['#818cf8', '#38bdf8', '#34d399', '#f43f5e'],
+        border: '#10182e'
+      },
+      alabaster: {
+        time: ['#2563eb', '#0284c7', '#059669', '#d97706'],
+        energy: ['#3b82f6', '#0ea5e9', '#10b981', '#f43f5e'],
+        border: '#ffffff'
+      },
+      nordic: {
+        time: ['#0284c7', '#0ea5e9', '#059669', '#d97706'],
+        energy: ['#38bdf8', '#7dd3fc', '#10b981', '#f59e0b'],
+        border: '#ffffff'
+      },
+      sakura: {
+        time: ['#e11d48', '#db2777', '#9333ea', '#ea580c'],
+        energy: ['#fb7185', '#f472b6', '#c084fc', '#fb923c'],
+        border: '#ffffff'
+      },
+      matcha: {
+        time: ['#059669', '#0d9488', '#0284c7', '#d97706'],
+        energy: ['#10b981', '#14b8a6', '#38bdf8', '#f59e0b'],
+        border: '#ffffff'
+      },
+      latte: {
+        time: ['#d97706', '#b45309', '#059669', '#e11d48'],
+        energy: ['#f59e0b', '#d97706', '#10b981', '#fb7185'],
+        border: '#ffffff'
+      },
+      cyberpunk: {
+        time: ['#ec4899', '#a855f7', '#06b6d4', '#f59e0b'],
+        energy: ['#f472b6', '#c084fc', '#38bdf8', '#fbbf24'],
+        border: '#1c0d38'
+      },
+      emerald: {
+        time: ['#10b981', '#14b8a6', '#06b6d4', '#f59e0b'],
+        energy: ['#34d399', '#2dd4bf', '#38bdf8', '#fbbf24'],
+        border: '#0a241c'
+      },
+      solar: {
+        time: ['#f59e0b', '#f43f5e', '#6366f1', '#10b981'],
+        energy: ['#fbbf24', '#fb7185', '#818cf8', '#34d399'],
+        border: '#261612'
+      }
+    };
+
+    // ================= 3. PIE CHARTS & REAL LIFE ANALYTICS CONTROLLER =================
+    let timePieChart, energyPieChart;
+    let latestLifeBalance = null;
+
+    const PIE_THEME_COLORS = {
+      midnight: {
+        time: ['#6366f1', '#06b6d4', '#10b981', '#f59e0b'],
+        energy: ['#818cf8', '#38bdf8', '#34d399', '#f43f5e'],
+        border: '#10182e'
+      },
+      alabaster: {
+        time: ['#2563eb', '#0284c7', '#059669', '#d97706'],
+        energy: ['#3b82f6', '#0ea5e9', '#10b981', '#f43f5e'],
+        border: '#ffffff'
+      },
+      nordic: {
+        time: ['#0284c7', '#0ea5e9', '#059669', '#d97706'],
+        energy: ['#38bdf8', '#7dd3fc', '#10b981', '#f59e0b'],
+        border: '#ffffff'
+      },
+      sakura: {
+        time: ['#e11d48', '#db2777', '#9333ea', '#ea580c'],
+        energy: ['#fb7185', '#f472b6', '#c084fc', '#fb923c'],
+        border: '#ffffff'
+      },
+      matcha: {
+        time: ['#059669', '#0d9488', '#0284c7', '#d97706'],
+        energy: ['#10b981', '#14b8a6', '#38bdf8', '#f59e0b'],
+        border: '#ffffff'
+      },
+      latte: {
+        time: ['#d97706', '#b45309', '#059669', '#e11d48'],
+        energy: ['#f59e0b', '#d97706', '#10b981', '#fb7185'],
+        border: '#ffffff'
+      },
+      cyberpunk: {
+        time: ['#ec4899', '#a855f7', '#06b6d4', '#f59e0b'],
+        energy: ['#f472b6', '#c084fc', '#38bdf8', '#fbbf24'],
+        border: '#1c0d38'
+      },
+      emerald: {
+        time: ['#10b981', '#14b8a6', '#06b6d4', '#f59e0b'],
+        energy: ['#34d399', '#2dd4bf', '#38bdf8', '#fbbf24'],
+        border: '#0a241c'
+      },
+      solar: {
+        time: ['#f59e0b', '#f43f5e', '#6366f1', '#10b981'],
+        energy: ['#fbbf24', '#fb7185', '#818cf8', '#34d399'],
+        border: '#261612'
+      }
+    };
+
+    const API_HEADERS = {
+      'Authorization': 'Bearer user_1',
+      'Content-Type': 'application/json'
+    };
+
+    async function loadRealLifeAnalytics() {
+      try {
+        const [balRes, intelRes, teleRes] = await Promise.all([
+          fetch('/api/intelligence/life-balance', { headers: API_HEADERS }),
+          fetch('/api/intelligence/insights', { headers: API_HEADERS }),
+          fetch('/api/intelligence/database-telemetry', { headers: API_HEADERS })
+        ]);
+        if (balRes.ok) {
+          latestLifeBalance = await balRes.json();
+          renderRealLifeKPIs(latestLifeBalance);
+        }
+        if (teleRes.ok) {
+          const telemetryData = await teleRes.json();
+          renderDatasetTelemetry(telemetryData);
+        }
+        if (intelRes.ok) {
+          const insights = await intelRes.json();
+          renderRealInsights(insights);
+        }
+      } catch (err) {
+        console.error('Error loading real life analytics:', err);
+      }
+    }
+
+    function renderRealLifeKPIs(data) {
+      if (!data || !data.kpis) return;
+      const k = data.kpis;
+      const elEq = document.getElementById('kpiEquilibrium');
+      const elEqSub = document.getElementById('kpiEquilibriumSub');
+      const elSleep = document.getElementById('kpiSleep');
+      const elSleepSub = document.getElementById('kpiSleepSub');
+      const elStudy = document.getElementById('kpiStudy');
+      const elStudySub = document.getElementById('kpiStudySub');
+      const elRunway = document.getElementById('kpiRunway');
+      const elRunwaySub = document.getElementById('kpiRunwaySub');
+
+      if (elEq) elEq.innerText = k.life_equilibrium;
+      if (elEqSub) elEqSub.innerText = k.equilibrium_sub;
+      if (elSleep) elSleep.innerText = k.sleep_hours;
+      if (elSleepSub) elSleepSub.innerText = k.sleep_sub;
+      if (elStudy) elStudy.innerText = k.study_hours;
+      if (elStudySub) elStudySub.innerText = k.study_sub;
+      if (elRunway) elRunway.innerText = k.financial_runway;
+      if (elRunwaySub) elRunwaySub.innerText = k.financial_sub;
+    }
+
+    function renderDatasetTelemetry(d) {
+      if (!d) return;
+      const pill = document.getElementById('datasetStatusPill');
+      const title = document.getElementById('dbBannerTitle');
+      const desc = document.getElementById('dbBannerDesc');
+
+      if (d.is_empty) {
+        if (pill) { pill.innerText = 'AWAITING DATASET'; pill.style.color = '#f59e0b'; }
+        if (title) title.innerText = 'Database Clean: 0 Records (Ready for Dataset)';
+        if (desc) desc.innerText = 'All dummy & hardcoded data removed. The system is connected directly to your SQLite database and computes metrics solely from real records as soon as your dataset is provided.';
+      } else {
+        if (pill) { pill.innerText = 'LIVE TELEMETRY'; pill.style.color = '#10b981'; }
+        if (title) title.innerText = 'Live Database Connected: Real Telemetry Active';
+        if (desc) desc.innerText = '100% computed from active database tables. No fake or hardcoded numbers.';
+      }
+
+      // Tasks
+      const t = d.tasks || { total: 0, pending: 0, completed: 0 };
+      const elTVal = document.getElementById('telemetryTasksVal');
+      const elTMeta = document.getElementById('telemetryTasksMeta');
+      const elTBadge = document.getElementById('telemetryTasksBadge');
+      if (elTVal) elTVal.innerText = t.total;
+      if (elTMeta) elTMeta.innerText = `${t.pending} Pending • ${t.completed} Completed`;
+      if (elTBadge) elTBadge.innerText = `${t.pending} Active`;
+
+      // Finances
+      const f = d.finances || { total_expenses: 0, total_spent: 0, total_budget: 0 };
+      const elFVal = document.getElementById('telemetryExpVal');
+      const elFMeta = document.getElementById('telemetryExpMeta');
+      const elFBadge = document.getElementById('telemetryExpBadge');
+      if (elFVal) elFVal.innerText = `₹${Math.round(f.total_spent).toLocaleString()}`;
+      if (elFMeta) elFMeta.innerText = `₹${Math.round(f.total_budget).toLocaleString()} Budget Allocated`;
+      if (elFBadge) elFBadge.innerText = `${f.total_expenses} Logged`;
+
+      // Travel
+      const tr = d.travel || { total_trips: 0, upcoming: 0 };
+      const elTrVal = document.getElementById('telemetryTripVal');
+      const elTrMeta = document.getElementById('telemetryTripMeta');
+      const elTrBadge = document.getElementById('telemetryTripBadge');
+      if (elTrVal) elTrVal.innerText = tr.total_trips;
+      if (elTrMeta) elTrMeta.innerText = `${tr.upcoming} Upcoming Itineraries`;
+      if (elTrBadge) elTrBadge.innerText = `${tr.total_trips} Planned`;
+
+      // Health
+      const h = d.health || { records_count: 0, avg_sleep_hours: 0 };
+      const elHVal = document.getElementById('telemetryHealthVal');
+      const elHMeta = document.getElementById('telemetryHealthMeta');
+      const elHBadge = document.getElementById('telemetryHealthBadge');
+      if (elHVal) elHVal.innerText = h.records_count > 0 ? `${h.avg_sleep_hours} hrs` : '--';
+      if (elHMeta) elHMeta.innerText = h.records_count > 0 ? `Avg across ${h.records_count} check-ins` : 'Avg Sleep: 0.0 hrs';
+      if (elHBadge) elHBadge.innerText = `${h.records_count} Logs`;
+    }
+
+    function renderRealInsights(insights) {
+      const container = document.getElementById('insightsContainer');
+      if (!container) return;
+      if (!insights || insights.length === 0) {
+        container.innerHTML = `
+          <div class="insight-card">
+            <div class="insight-head">
+              <span class="insight-title"><span>📊</span> Telemetry Status: Clean Baseline</span>
+              <span class="insight-pill pill-good">READY</span>
+            </div>
+            <p class="insight-desc">All user data has been cleared. The system is standing by to compute real metrics dynamically as soon as you provide or import your dataset.</p>
+          </div>
+        `;
+        return;
+      }
+      const icons = { 'ACADEMIC_WELLNESS': '🧘', 'TRAVEL_ACADEMIC': '📅', 'FINANCIAL': '💳', 'DEFAULT': '⚡' };
+      container.innerHTML = insights.map(i => {
+        const icon = icons[i.insight_type] || '💡';
+        const pillClass = i.severity === 'HIGH' ? 'pill-high' : (i.severity === 'MEDIUM' ? 'pill-med' : 'pill-good');
+        return `
+          <div class="insight-card">
+            <div class="insight-head">
+              <span class="insight-title"><span>${icon}</span> ${i.title}</span>
+              <span class="insight-pill ${pillClass}">${i.severity}</span>
+            </div>
+            <p class="insight-desc">${i.recommendation || (i.evidence_signals && i.evidence_signals.join(' • ')) || 'Real telemetry signal recorded.'}</p>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ================= 4. THEME SWITCHER (5 THEMES WITH GSAP & PIE UPDATES) =================
+    function switchTheme(themeKey, elem, label) {
+      document.documentElement.setAttribute('data-theme', themeKey);
+      document.getElementById('themeLabel').innerText = label;
+
+      document.querySelectorAll('.swatch-btn').forEach(b => b.classList.remove('active'));
+      if (elem) elem.classList.add('active');
+
+      const colors = THEME_3D_COLORS[themeKey];
+      if (colors && orbitRing1) {
+        gsap.to(orbitRing1.material.color, { r: new THREE.Color(colors.primary).r, g: new THREE.Color(colors.primary).g, b: new THREE.Color(colors.primary).b, duration: 0.5 });
+        gsap.to(orbitRing2.material.color, { r: new THREE.Color(colors.accent).r, g: new THREE.Color(colors.accent).g, b: new THREE.Color(colors.accent).b, duration: 0.5 });
+        gsap.to(orbitRing3.material.color, { r: new THREE.Color(colors.gold).r, g: new THREE.Color(colors.gold).g, b: new THREE.Color(colors.gold).b, duration: 0.5 });
+        gsap.to(capMat.color, { r: new THREE.Color(colors.cap).r, g: new THREE.Color(colors.cap).g, b: new THREE.Color(colors.cap).b, duration: 0.5 });
+        gsap.to(bookCoverMat.color, { r: new THREE.Color(colors.book).r, g: new THREE.Color(colors.book).g, b: new THREE.Color(colors.book).b, duration: 0.5 });
+        gsap.to(diplomaMat.color, { r: new THREE.Color(colors.diploma).r, g: new THREE.Color(colors.diploma).g, b: new THREE.Color(colors.diploma).b, duration: 0.5 });
+        gsap.to(campusStars.material.color, { r: new THREE.Color(colors.stars).r, g: new THREE.Color(colors.stars).g, b: new THREE.Color(colors.stars).b, duration: 0.5 });
+        if (mouseLight) {
+          gsap.to(mouseLight.color, { r: new THREE.Color(colors.light).r, g: new THREE.Color(colors.light).g, b: new THREE.Color(colors.light).b, duration: 0.5 });
+        }
+      }
+
+      localStorage.setItem('campuslife_theme', themeKey);
+      showToast(`Switched to ${label} theme`, '🎨');
+    }
+
+    function showToast(msg, icon = '✅') {
+      const toast = document.getElementById('actionToast');
+      document.getElementById('toastMsg').innerText = msg;
+      document.getElementById('toastIcon').innerText = icon;
+      toast.style.display = 'flex';
+      setTimeout(() => { toast.style.display = 'none'; }, 3200);
+    }
+
+    async function triggerImmediateCall() {
+      showToast('Broadcasting proactive intervention call...', '📞');
+      try {
+        const res = await fetch('/api/voice/calls/mobile-ring', {
+          method: 'POST',
+          headers: API_HEADERS,
+          body: JSON.stringify({
+            greeting: "Hello! This is your CampusLife student co-pilot calling. I am checking in with your live dashboard telemetry."
+          })
+        });
+        const data = await res.json();
+        if (data.phones_ringing > 0) {
+          showToast(`Ringing ${data.phones_ringing} connected phone(s)!`, '🔔');
+        } else {
+          showToast('Call signal active! Open Phone Standby (/call) to answer.', '📲');
+        }
+      } catch(e) {
+        showToast('Error sending call signal.', '✕');
+      }
+    }
+
+    // GSAP Entrance
+    function runGSAPEntrance() {
+      if (!window.gsap) return;
+      gsap.from(".sidebar", { x: -40, opacity: 0, duration: 0.6, ease: "power3.out" });
+      gsap.from(".top-command-bar", { y: -25, opacity: 0, duration: 0.5, ease: "power3.out" }, "-=0.3");
+      gsap.from(".kpi-tile", { y: 25, opacity: 0, stagger: 0.08, duration: 0.6, ease: "power3.out" }, "-=0.2");
+      gsap.from(".canvas-panel", { y: 30, opacity: 0, stagger: 0.1, duration: 0.7, ease: "power3.out" }, "-=0.3");
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      initAcademic3DScene();
+      loadRealLifeAnalytics();
+      runGSAPEntrance();
+
+      const savedTheme = localStorage.getItem('campuslife_theme');
+      if (savedTheme && savedTheme !== 'alabaster') {
+        const targetBtn = document.querySelector(`.swatch-btn[onclick*="${savedTheme}"]`);
+        const labelMap = { 
+          midnight: 'Midnight', alabaster: 'Alabaster', nordic: 'Nordic Frost', 
+          sakura: 'Sakura', matcha: 'Matcha', latte: 'Latte', 
+          cyberpunk: 'Cyberpunk', emerald: 'Emerald', solar: 'Solar' 
+        };
+        switchTheme(savedTheme, targetBtn, labelMap[savedTheme] || 'Theme');
+      }
+    });
+  </script>
+</body>
+</html>

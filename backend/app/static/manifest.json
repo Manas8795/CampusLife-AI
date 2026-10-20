@@ -1,0 +1,36 @@
+{
+  "name": "CampusLife AI — Autonomous Student Co-Pilot",
+  "short_name": "CampusLife",
+  "description": "Cross-domain predictive intelligence, 3D holographic neural core, full-duplex voice companion, and academic sentinel.",
+  "start_url": "/call",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#060913",
+  "theme_color": "#4f46e5",
+  "categories": ["education", "productivity", "lifestyle"],
+  "icons": [
+    {
+      "src": "/static/icon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Open 3D Voice Call",
+      "short_name": "Call AI",
+      "description": "Instant duplex speech interaction with your personal AI mentor",
+      "url": "/call",
+      "icons": [{ "src": "/static/icon.svg", "sizes": "192x192" }]
+    },
+    {
+      "name": "Student Dashboard",
+      "short_name": "Dashboard",
+      "description": "View Campus Life Index, Deadlines, Sleep & Budget",
+      "url": "/",
+      "icons": [{ "src": "/static/icon.svg", "sizes": "192x192" }]
+    }
+  ]
+}

@@ -1,0 +1,202 @@
+id,user_id,session_type,status,context_data,started_at,last_activity
+1,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 17:36:44.866678,2026-10-05 17:36:44.889203
+2,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""CREATE_TASK"", ""last_tool"": ""create_task""}",2026-10-05 17:36:44.900918,2026-10-05 17:36:44.909039
+3,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_WELLNESS"", ""last_tool"": ""get_wellness_state""}",2026-10-05 17:36:44.919413,2026-10-05 17:36:44.925206
+4,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_FINANCES"", ""last_tool"": ""get_expenses_summary""}",2026-10-05 17:36:44.934745,2026-10-05 17:36:44.946562
+5,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TRIPS"", ""last_tool"": ""get_upcoming_trips""}",2026-10-05 17:36:44.954857,2026-10-05 17:36:44.964003
+6,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_INTELLIGENCE"", ""last_tool"": ""get_student_intelligence""}",2026-10-05 17:36:44.972420,2026-10-05 17:36:44.991570
+7,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 17:37:27.640620,2026-10-05 17:37:27.721176
+8,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""CREATE_TASK"", ""last_tool"": ""create_task""}",2026-10-05 17:37:27.758078,2026-10-05 17:37:27.781234
+9,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_WELLNESS"", ""last_tool"": ""get_wellness_state""}",2026-10-05 17:37:27.823111,2026-10-05 17:37:27.845683
+10,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_FINANCES"", ""last_tool"": ""get_expenses_summary""}",2026-10-05 17:37:27.872045,2026-10-05 17:37:27.911707
+11,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TRIPS"", ""last_tool"": ""get_upcoming_trips""}",2026-10-05 17:37:27.941760,2026-10-05 17:37:27.967919
+12,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_INTELLIGENCE"", ""last_tool"": ""get_student_intelligence""}",2026-10-05 17:37:27.990546,2026-10-05 17:37:28.036137
+13,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 17:37:38.325579,2026-10-05 17:37:38.361451
+14,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""CREATE_TASK"", ""last_tool"": ""create_task""}",2026-10-05 17:37:38.377271,2026-10-05 17:37:38.389076
+15,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_WELLNESS"", ""last_tool"": ""get_wellness_state""}",2026-10-05 17:37:38.405296,2026-10-05 17:37:38.412907
+16,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_FINANCES"", ""last_tool"": ""get_expenses_summary""}",2026-10-05 17:37:38.427262,2026-10-05 17:37:38.441000
+17,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TRIPS"", ""last_tool"": ""get_upcoming_trips""}",2026-10-05 17:37:38.455714,2026-10-05 17:37:38.466683
+18,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_INTELLIGENCE"", ""last_tool"": ""get_student_intelligence""}",2026-10-05 17:37:38.478321,2026-10-05 17:37:38.504899
+19,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 17:37:55.263836,2026-10-05 17:37:55.287032
+20,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""CREATE_TASK"", ""last_tool"": ""create_task""}",2026-10-05 17:37:55.298344,2026-10-05 17:37:55.305433
+21,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_WELLNESS"", ""last_tool"": ""get_wellness_state""}",2026-10-05 17:37:55.315982,2026-10-05 17:37:55.321512
+22,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_FINANCES"", ""last_tool"": ""get_expenses_summary""}",2026-10-05 17:37:55.330771,2026-10-05 17:37:55.342174
+23,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TRIPS"", ""last_tool"": ""get_upcoming_trips""}",2026-10-05 17:37:55.350441,2026-10-05 17:37:55.360127
+24,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_INTELLIGENCE"", ""last_tool"": ""get_student_intelligence""}",2026-10-05 17:37:55.368121,2026-10-05 17:37:55.386685
+25,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 17:38:31.328213,2026-10-05 17:38:31.367236
+26,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""CREATE_TASK"", ""last_tool"": ""create_task""}",2026-10-05 17:38:31.379819,2026-10-05 17:38:31.387628
+27,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_WELLNESS"", ""last_tool"": ""get_wellness_state""}",2026-10-05 17:38:31.398319,2026-10-05 17:38:31.403936
+28,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_FINANCES"", ""last_tool"": ""get_expenses_summary""}",2026-10-05 17:38:31.413383,2026-10-05 17:38:31.423407
+29,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TRIPS"", ""last_tool"": ""get_upcoming_trips""}",2026-10-05 17:38:31.433537,2026-10-05 17:38:31.441964
+30,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_INTELLIGENCE"", ""last_tool"": ""get_student_intelligence""}",2026-10-05 17:38:31.450509,2026-10-05 17:38:31.469916
+31,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 17:49:34.787146,2026-10-05 17:49:34.808378
+32,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""CREATE_TASK"", ""last_tool"": ""create_task""}",2026-10-05 17:49:34.820441,2026-10-05 17:49:34.827538
+33,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_WELLNESS"", ""last_tool"": ""get_wellness_state""}",2026-10-05 17:49:34.837248,2026-10-05 17:49:34.843201
+34,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_FINANCES"", ""last_tool"": ""get_expenses_summary""}",2026-10-05 17:49:34.852466,2026-10-05 17:49:34.862849
+35,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TRIPS"", ""last_tool"": ""get_upcoming_trips""}",2026-10-05 17:49:34.871721,2026-10-05 17:49:34.880436
+36,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_INTELLIGENCE"", ""last_tool"": ""get_student_intelligence""}",2026-10-05 17:49:34.890088,2026-10-05 17:49:34.908613
+37,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 17:50:22.832655,2026-10-05 17:50:22.857028
+38,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""CREATE_TASK"", ""last_tool"": ""create_task""}",2026-10-05 17:50:22.869770,2026-10-05 17:50:22.878382
+39,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_WELLNESS"", ""last_tool"": ""get_wellness_state""}",2026-10-05 17:50:22.889459,2026-10-05 17:50:22.894915
+40,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_FINANCES"", ""last_tool"": ""get_expenses_summary""}",2026-10-05 17:50:22.903729,2026-10-05 17:50:22.914272
+41,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TRIPS"", ""last_tool"": ""get_upcoming_trips""}",2026-10-05 17:50:22.923052,2026-10-05 17:50:22.930718
+42,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_INTELLIGENCE"", ""last_tool"": ""get_student_intelligence""}",2026-10-05 17:50:22.940880,2026-10-05 17:50:22.961631
+43,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 17:50:48.113023,2026-10-05 17:50:48.138551
+44,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""CREATE_TASK"", ""last_tool"": ""create_task""}",2026-10-05 17:50:48.149774,2026-10-05 17:50:48.157658
+45,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_WELLNESS"", ""last_tool"": ""get_wellness_state""}",2026-10-05 17:50:48.167479,2026-10-05 17:50:48.173726
+46,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_FINANCES"", ""last_tool"": ""get_expenses_summary""}",2026-10-05 17:50:48.182481,2026-10-05 17:50:48.192456
+47,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TRIPS"", ""last_tool"": ""get_upcoming_trips""}",2026-10-05 17:50:48.201360,2026-10-05 17:50:48.208984
+48,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_INTELLIGENCE"", ""last_tool"": ""get_student_intelligence""}",2026-10-05 17:50:48.218022,2026-10-05 17:50:48.241073
+49,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 17:52:14.807183,2026-10-05 17:52:14.849099
+50,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""CREATE_TASK"", ""last_tool"": ""create_task""}",2026-10-05 17:52:14.862560,2026-10-05 17:52:14.872122
+51,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_WELLNESS"", ""last_tool"": ""get_wellness_state""}",2026-10-05 17:52:14.884338,2026-10-05 17:52:14.892243
+52,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_FINANCES"", ""last_tool"": ""get_expenses_summary""}",2026-10-05 17:52:14.904135,2026-10-05 17:52:14.917917
+53,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TRIPS"", ""last_tool"": ""get_upcoming_trips""}",2026-10-05 17:52:14.930958,2026-10-05 17:52:14.943113
+54,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_INTELLIGENCE"", ""last_tool"": ""get_student_intelligence""}",2026-10-05 17:52:14.954920,2026-10-05 17:52:14.977466
+55,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 17:55:51.271165,2026-10-05 17:55:51.309517
+56,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""CREATE_TASK"", ""last_tool"": ""create_task""}",2026-10-05 17:55:51.322164,2026-10-05 17:55:51.330518
+57,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_WELLNESS"", ""last_tool"": ""get_wellness_state""}",2026-10-05 17:55:51.339933,2026-10-05 17:55:51.346436
+58,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_FINANCES"", ""last_tool"": ""get_expenses_summary""}",2026-10-05 17:55:51.354356,2026-10-05 17:55:51.365811
+59,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TRIPS"", ""last_tool"": ""get_upcoming_trips""}",2026-10-05 17:55:51.373705,2026-10-05 17:55:51.382375
+60,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_INTELLIGENCE"", ""last_tool"": ""get_student_intelligence""}",2026-10-05 17:55:51.390616,2026-10-05 17:55:51.409716
+61,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 18:00:29.149360,2026-10-05 18:00:29.185743
+62,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""CREATE_TASK"", ""last_tool"": ""create_task""}",2026-10-05 18:00:29.203876,2026-10-05 18:00:29.216610
+63,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_WELLNESS"", ""last_tool"": ""get_wellness_state""}",2026-10-05 18:00:29.247611,2026-10-05 18:00:29.252778
+64,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_FINANCES"", ""last_tool"": ""get_expenses_summary""}",2026-10-05 18:00:29.261320,2026-10-05 18:00:29.274040
+65,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TRIPS"", ""last_tool"": ""get_upcoming_trips""}",2026-10-05 18:00:29.283633,2026-10-05 18:00:29.291719
+66,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_INTELLIGENCE"", ""last_tool"": ""get_student_intelligence""}",2026-10-05 18:00:29.299828,2026-10-05 18:00:29.318718
+67,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-05 18:01:03.921463,2026-10-05 18:01:03.933824
+68,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-05 18:01:09.534098,2026-10-05 18:01:09.541654
+69,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 18:05:19.032508,2026-10-05 18:05:19.058162
+70,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""CREATE_TASK"", ""last_tool"": ""create_task""}",2026-10-05 18:05:19.068660,2026-10-05 18:05:19.077693
+71,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_WELLNESS"", ""last_tool"": ""get_wellness_state""}",2026-10-05 18:05:19.087055,2026-10-05 18:05:19.092813
+72,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_FINANCES"", ""last_tool"": ""get_expenses_summary""}",2026-10-05 18:05:19.100478,2026-10-05 18:05:19.110997
+73,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TRIPS"", ""last_tool"": ""get_upcoming_trips""}",2026-10-05 18:05:19.120350,2026-10-05 18:05:19.128691
+74,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_INTELLIGENCE"", ""last_tool"": ""get_student_intelligence""}",2026-10-05 18:05:19.137416,2026-10-05 18:05:19.157489
+75,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_WELLNESS"", ""last_tool"": ""get_wellness_state""}",2026-10-05 18:05:26.076384,2026-10-05 18:05:26.083545
+76,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""PRODUCTIVITY_COACH"", ""last_intent"": ""GET_WELLNESS"", ""last_tool"": ""get_wellness_state""}",2026-10-05 18:06:18.986979,2026-10-05 18:06:19.028011
+77,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""CAMPUS_PEER"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 18:06:24.304415,2026-10-05 18:06:24.330132
+78,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 18:06:45.086284,2026-10-05 18:06:45.121202
+79,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""CREATE_TASK"", ""last_tool"": ""create_task""}",2026-10-05 18:06:45.132821,2026-10-05 18:06:45.141355
+80,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_WELLNESS"", ""last_tool"": ""get_wellness_state""}",2026-10-05 18:06:45.150624,2026-10-05 18:06:45.156548
+81,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_FINANCES"", ""last_tool"": ""get_expenses_summary""}",2026-10-05 18:06:45.164978,2026-10-05 18:06:45.176572
+82,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TRIPS"", ""last_tool"": ""get_upcoming_trips""}",2026-10-05 18:06:45.184396,2026-10-05 18:06:45.192878
+83,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_INTELLIGENCE"", ""last_tool"": ""get_student_intelligence""}",2026-10-05 18:06:45.200436,2026-10-05 18:06:45.221297
+84,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 18:06:45.345133,2026-10-05 18:06:45.349821
+85,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""PRODUCTIVITY_COACH"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 18:06:45.360474,2026-10-05 18:06:45.365978
+86,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""CAMPUS_PEER"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 18:06:45.373344,2026-10-05 18:06:45.377796
+87,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 18:07:02.017212,2026-10-05 18:07:02.043944
+88,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""CREATE_TASK"", ""last_tool"": ""create_task""}",2026-10-05 18:07:02.055209,2026-10-05 18:07:02.062587
+89,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_WELLNESS"", ""last_tool"": ""get_wellness_state""}",2026-10-05 18:07:02.071929,2026-10-05 18:07:02.077743
+90,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_FINANCES"", ""last_tool"": ""get_expenses_summary""}",2026-10-05 18:07:02.086372,2026-10-05 18:07:02.096762
+91,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TRIPS"", ""last_tool"": ""get_upcoming_trips""}",2026-10-05 18:07:02.105781,2026-10-05 18:07:02.114062
+92,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_INTELLIGENCE"", ""last_tool"": ""get_student_intelligence""}",2026-10-05 18:07:02.123323,2026-10-05 18:07:02.144076
+93,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 18:07:02.244239,2026-10-05 18:07:02.248534
+94,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""PRODUCTIVITY_COACH"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 18:07:02.257527,2026-10-05 18:07:02.262054
+95,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""CAMPUS_PEER"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 18:07:02.268954,2026-10-05 18:07:02.273651
+96,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 18:09:05.501960,2026-10-05 18:09:05.512721
+97,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-05 18:09:16.401128,2026-10-05 18:09:16.420167
+98,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-05 18:09:28.584046,2026-10-05 18:09:28.603318
+99,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-05 18:09:34.846385,2026-10-05 18:09:34.851997
+100,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-05 18:09:50.147716,2026-10-05 18:09:50.156996
+101,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""CREATE_TASK"", ""last_tool"": ""create_task""}",2026-10-05 18:10:49.556483,2026-10-05 18:10:49.584703
+102,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""CAMPUS_PEER"", ""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-05 18:17:24.228264,2026-10-05 18:17:26.340167
+103,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""CAMPUS_PEER"", ""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-05 18:17:32.004698,2026-10-05 18:17:34.029190
+104,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 18:17:38.024110,2026-10-05 18:17:40.104021
+105,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""CREATE_TASK"", ""last_tool"": ""create_task""}",2026-10-05 18:17:40.125349,2026-10-05 18:17:42.146603
+106,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_WELLNESS"", ""last_tool"": ""get_wellness_state""}",2026-10-05 18:17:42.175563,2026-10-05 18:17:44.204298
+107,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_FINANCES"", ""last_tool"": ""get_expenses_summary""}",2026-10-05 18:17:44.230406,2026-10-05 18:17:46.266532
+108,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TRIPS"", ""last_tool"": ""get_upcoming_trips""}",2026-10-05 18:17:46.299657,2026-10-05 18:17:48.331019
+109,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_INTELLIGENCE"", ""last_tool"": ""get_student_intelligence""}",2026-10-05 18:17:48.360022,2026-10-05 18:17:50.406367
+110,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 18:17:52.545463,2026-10-05 18:17:54.578057
+111,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""PRODUCTIVITY_COACH"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 18:17:54.604205,2026-10-05 18:17:56.624405
+112,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""CAMPUS_PEER"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 18:17:56.639992,2026-10-05 18:17:58.669662
+113,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-05 18:31:27.951746,2026-10-05 18:31:28.364727
+114,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-05 19:22:24.968374,2026-10-05 19:22:30.330016
+115,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""PRODUCTIVITY_COACH"", ""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-05 19:22:34.026447,2026-10-05 19:22:37.524779
+116,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""CAMPUS_PEER"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 19:22:42.135865,2026-10-05 19:22:58.211337
+117,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""CAMPUS_PEER"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 19:23:18.122770,2026-10-05 19:23:34.158192
+118,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-05 19:24:00.598904,2026-10-05 19:24:16.635850
+119,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-05 19:24:43.569790,2026-10-05 19:24:46.313149
+120,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-05 19:24:50.838478,2026-10-05 19:24:53.640264
+121,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 19:24:57.472858,2026-10-05 19:25:04.580721
+122,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 19:25:09.790409,2026-10-05 19:25:13.263314
+123,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 19:25:36.593591,2026-10-05 19:25:40.196581
+124,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 19:25:48.661332,2026-10-05 19:25:56.367834
+125,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""CREATE_TASK"", ""last_tool"": ""create_task""}",2026-10-05 19:25:56.720773,2026-10-05 19:25:59.678790
+126,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_WELLNESS"", ""last_tool"": ""get_wellness_state""}",2026-10-05 19:25:59.720771,2026-10-05 19:26:04.595476
+127,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_FINANCES"", ""last_tool"": ""get_expenses_summary""}",2026-10-05 19:26:04.644130,2026-10-05 19:26:10.716001
+128,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TRIPS"", ""last_tool"": ""get_upcoming_trips""}",2026-10-05 19:26:10.764971,2026-10-05 19:26:17.820063
+129,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_INTELLIGENCE"", ""last_tool"": ""get_student_intelligence""}",2026-10-05 19:26:17.850466,2026-10-05 19:26:34.999349
+130,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 19:26:38.163763,2026-10-05 19:26:52.789954
+131,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 19:26:44.864302,2026-10-05 19:27:01.556727
+132,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""CREATE_TASK"", ""last_tool"": ""create_task""}",2026-10-05 19:26:52.851016,2026-10-05 19:27:06.907321
+133,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_WELLNESS"", ""last_tool"": ""get_wellness_state""}",2026-10-05 19:27:06.955393,2026-10-05 19:27:12.000985
+134,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_FINANCES"", ""last_tool"": ""get_expenses_summary""}",2026-10-05 19:27:12.041794,2026-10-05 19:27:15.056731
+135,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TRIPS"", ""last_tool"": ""get_upcoming_trips""}",2026-10-05 19:27:15.096659,2026-10-05 19:27:18.835915
+136,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_INTELLIGENCE"", ""last_tool"": ""get_student_intelligence""}",2026-10-05 19:27:18.874530,2026-10-05 19:27:22.139641
+137,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 19:27:29.176557,2026-10-05 19:27:37.558599
+138,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""PRODUCTIVITY_COACH"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 19:27:37.597617,2026-10-05 19:27:44.269039
+139,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""CAMPUS_PEER"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 19:27:44.306556,2026-10-05 19:27:51.560094
+140,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 19:31:43.698080,2026-10-05 19:31:49.986712
+141,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 19:32:07.661522,2026-10-05 19:32:15.001746
+142,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-05 19:32:21.944659,2026-10-05 19:32:24.802000
+143,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-05 19:32:40.311638,2026-10-05 19:32:42.270046
+144,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-05 19:32:48.502464,2026-10-05 19:32:50.451029
+145,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GET_WELLNESS"", ""last_tool"": ""get_wellness_state""}",2026-10-05 19:32:59.911410,2026-10-05 19:33:04.728143
+146,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-05 19:33:53.283607,2026-10-05 19:33:55.894432
+147,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 19:35:06.433018,2026-10-05 19:35:12.553398
+148,1,IN_APP_VOICE,ACTIVE,{},2026-10-05 19:35:37.375001,2026-10-05 19:35:37.375001
+149,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""COMPLETE_TASK"", ""last_tool"": ""complete_task""}",2026-10-05 19:36:26.118947,2026-10-05 19:36:28.736571
+150,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""LOG_SLEEP"", ""last_tool"": ""log_sleep""}",2026-10-05 19:36:35.844120,2026-10-05 19:36:39.283331
+151,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""LOG_SLEEP"", ""last_tool"": ""log_sleep""}",2026-10-05 19:38:04.624641,2026-10-05 19:38:08.266318
+152,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""LOG_SLEEP"", ""last_tool"": ""log_sleep""}",2026-10-05 19:42:13.270292,2026-10-05 19:42:15.471778
+153,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 19:53:48.227542,2026-10-05 19:53:58.881589
+154,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""COMPLETE_TASK"", ""last_tool"": ""complete_task""}",2026-10-05 19:54:33.244116,2026-10-05 19:54:36.328773
+155,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""COMPLETE_TASK"", ""last_tool"": ""complete_task""}",2026-10-05 19:55:02.041166,2026-10-05 19:55:05.387663
+156,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""COMPLETE_TASK"", ""last_tool"": ""complete_task""}",2026-10-05 19:57:02.370285,2026-10-05 19:57:05.556451
+157,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""COMPLETE_TASK"", ""last_tool"": ""complete_task""}",2026-10-05 19:57:18.678001,2026-10-05 19:57:22.205438
+158,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""COMPLETE_TASK"", ""last_tool"": ""complete_task""}",2026-10-05 19:58:49.202982,2026-10-05 19:58:52.608222
+159,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""COMPLETE_TASK"", ""last_tool"": ""complete_task""}",2026-10-05 20:01:30.401419,2026-10-05 20:01:37.299376
+160,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""COMPLETE_TASK"", ""last_tool"": ""complete_task""}",2026-10-05 20:01:56.212181,2026-10-05 20:02:03.829170
+161,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""COMPLETE_TASK"", ""last_tool"": ""complete_task""}",2026-10-05 20:03:31.617962,2026-10-05 20:03:37.545544
+162,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 20:21:28.296829,2026-10-05 20:21:37.474999
+163,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""CREATE_TASK"", ""last_tool"": ""create_task""}",2026-10-05 20:21:37.512461,2026-10-05 20:21:40.194439
+164,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_WELLNESS"", ""last_tool"": ""get_wellness_state""}",2026-10-05 20:21:40.213035,2026-10-05 20:21:44.209361
+165,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_FINANCES"", ""last_tool"": ""get_expenses_summary""}",2026-10-05 20:21:44.241453,2026-10-05 20:21:48.526514
+166,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TRIPS"", ""last_tool"": ""get_upcoming_trips""}",2026-10-05 20:21:48.558790,2026-10-05 20:21:53.235391
+167,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_INTELLIGENCE"", ""last_tool"": ""get_student_intelligence""}",2026-10-05 20:21:53.251385,2026-10-05 20:22:00.662397
+168,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 20:22:00.969814,2026-10-05 20:22:06.922312
+169,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""PRODUCTIVITY_COACH"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 20:22:06.953010,2026-10-05 20:22:14.046079
+170,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""CAMPUS_PEER"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 20:22:14.076239,2026-10-05 20:22:20.828418
+171,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 20:25:26.303865,2026-10-05 20:25:32.382829
+172,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""CREATE_TASK"", ""last_tool"": ""create_task""}",2026-10-05 20:25:32.400260,2026-10-05 20:25:35.319243
+173,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_WELLNESS"", ""last_tool"": ""get_wellness_state""}",2026-10-05 20:25:35.351124,2026-10-05 20:25:40.147295
+174,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_FINANCES"", ""last_tool"": ""get_expenses_summary""}",2026-10-05 20:25:40.161153,2026-10-05 20:25:44.920992
+175,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TRIPS"", ""last_tool"": ""get_upcoming_trips""}",2026-10-05 20:25:44.937061,2026-10-05 20:25:49.309362
+176,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_INTELLIGENCE"", ""last_tool"": ""get_student_intelligence""}",2026-10-05 20:25:49.324496,2026-10-05 20:26:01.166987
+177,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 20:26:07.119866,2026-10-05 20:26:14.530398
+178,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""PRODUCTIVITY_COACH"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 20:26:14.545346,2026-10-05 20:26:21.581000
+179,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""CAMPUS_PEER"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-05 20:26:21.612097,2026-10-05 20:26:28.274229
+180,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-06 05:57:17.943002,2026-10-06 05:57:31.091038
+181,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""CREATE_TASK"", ""last_tool"": ""create_task""}",2026-10-06 05:57:31.120416,2026-10-06 05:57:33.737679
+182,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_WELLNESS"", ""last_tool"": ""get_wellness_state""}",2026-10-06 05:57:33.757082,2026-10-06 05:57:38.401422
+183,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_FINANCES"", ""last_tool"": ""get_expenses_summary""}",2026-10-06 05:57:38.418534,2026-10-06 05:57:42.912381
+184,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_TRIPS"", ""last_tool"": ""get_upcoming_trips""}",2026-10-06 05:57:42.939249,2026-10-06 05:57:49.242482
+185,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GET_INTELLIGENCE"", ""last_tool"": ""get_student_intelligence""}",2026-10-06 05:57:49.260955,2026-10-06 05:58:03.264134
+186,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-06 09:41:40.245016,2026-10-06 09:41:50.664166
+187,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-06 09:42:44.074145,2026-10-06 09:42:49.239833
+188,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-06 09:43:48.265704,2026-10-06 09:43:50.695434
+189,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-06 19:48:49.995653,2026-10-06 19:48:57.181809
+190,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-06 19:52:35.140085,2026-10-06 19:52:38.087110
+191,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""LOG_SLEEP"", ""last_tool"": ""log_sleep""}",2026-10-06 19:55:09.866643,2026-10-06 19:55:13.641109
+192,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-06 19:55:40.275437,2026-10-06 19:55:46.041945
+193,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-06 19:56:15.498311,2026-10-06 19:56:17.877734
+194,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""EXTEND_DEADLINE"", ""last_tool"": ""extend_task_deadline""}",2026-10-06 20:07:38.486617,2026-10-06 20:07:45.523805
+195,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""CHANGE_PRIORITY"", ""last_tool"": ""update_task_priority""}",2026-10-06 20:07:45.540909,2026-10-06 20:07:51.339231
+196,1,IN_APP_VOICE,ACTIVE,"{""last_intent"": ""COMPLETE_TASK"", ""last_tool"": ""complete_task""}",2026-10-06 20:07:51.355611,2026-10-06 20:07:56.650692
+197,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""EXTEND_DEADLINE"", ""last_tool"": ""extend_task_deadline""}",2026-10-06 20:11:07.417492,2026-10-06 20:11:12.634204
+198,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-06 20:11:27.923160,2026-10-06 20:11:33.287815
+199,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-06 20:11:51.941898,2026-10-06 20:11:54.069238
+200,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GENERAL_COACHING"", ""last_tool"": null}",2026-10-06 20:12:16.949480,2026-10-06 20:12:19.193480
+201,1,IN_APP_VOICE,ACTIVE,"{""persona"": ""EMPATHETIC_MENTOR"", ""last_intent"": ""GET_TASKS"", ""last_tool"": ""get_tasks""}",2026-10-06 20:12:43.979415,2026-10-07 20:28:02.946320

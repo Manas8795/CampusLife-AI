@@ -1,0 +1,6 @@
+id,user_id,record_date,mood,sleep_hours,study_hours,energy_level,stress_level,stress_score,notes,created_at
+1,1,2026-10-03,4,7.2,4.0,4,LOW,0.25,,2026-10-06 05:58:25.668620
+2,1,2026-10-04,3,6.1,5.5,3,MEDIUM,0.45,,2026-10-06 05:58:25.668622
+3,1,2026-10-05,2,5.3,7.5,2,HIGH,0.75,"Studied late night for OS exam, feeling fatigued.",2026-10-06 05:58:25.669287
+4,1,2026-10-06,2,5.1,8.0,2,HIGH,0.82,High stress from pending lab assignment.,2026-10-06 05:58:25.669289
+5,1,2026-10-07,5,8.0,3.0,4,LOW,0.2,"I had 8 hours of sleep and I am in a low stress mood. log this thing into my hair, felt and vitals.",2026-10-06 19:55:09.876349

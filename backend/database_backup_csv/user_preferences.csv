@@ -1,0 +1,2 @@
+id,user_id,notifications_enabled,voice_calls_enabled,calling_consent_status,quiet_hours_start,quiet_hours_end,preferred_call_time,currency
+1,1,1,1,OPTED_IN,23:00,07:30,EVENING,INR

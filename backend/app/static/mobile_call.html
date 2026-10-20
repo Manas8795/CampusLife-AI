@@ -1,0 +1,2011 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>CampusLife AI — 3D Standby & Autonomous Hologram Co-Pilot</title>
+  <!-- Progressive Web App (PWA) Manifest & Native Mobile Shell -->
+  <link rel="manifest" href="/static/manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="CampusLife AI">
+  <link rel="apple-touch-icon" href="/static/icon.svg">
+  <meta name="theme-color" content="#4f46e5">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Outfit:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Three.js 3D WebGL Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    :root {
+      /* LIGHT THEME (Alabaster / Nordic Luxury Light - Default) */
+      --bg-canvas: #f8fafc;
+      --bg-canvas-gradient: radial-gradient(circle at 50% 0%, #ffffff 0%, #f1f5f9 60%, #e2e8f0 100%);
+      --bg-card: rgba(255, 255, 255, 0.85);
+      --bg-card-subtle: rgba(248, 250, 252, 0.9);
+      --border-card: rgba(226, 232, 240, 0.9);
+      --border-card-glow: rgba(99, 102, 241, 0.35);
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --accent-primary: #4f46e5;
+      --accent-primary-light: #6366f1;
+      --accent-cyan: #0284c7;
+      --accent-emerald: #059669;
+      --accent-coral: #ef4444;
+      --accent-amber: #d97706;
+      --card-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.07), 0 4px 12px -2px rgba(15, 23, 42, 0.04);
+      --card-shadow-hover: 0 18px 36px -6px rgba(99, 102, 241, 0.12), 0 6px 16px -2px rgba(15, 23, 42, 0.06);
+      --orb-opacity: 0.35;
+      --pill-bg: rgba(16, 185, 129, 0.1);
+      --pill-border: rgba(16, 185, 129, 0.35);
+      --pill-text: #059669;
+      --input-bg: rgba(241, 245, 249, 0.9);
+      --input-border: rgba(203, 213, 225, 0.9);
+    }
+
+    [data-theme="dark"] {
+      /* DARK THEME (Cosmic Obsidian) */
+      --bg-canvas: #060913;
+      --bg-canvas-gradient: radial-gradient(circle at 50% 0%, #0c1222 0%, #060913 60%, #03050a 100%);
+      --bg-card: rgba(15, 23, 42, 0.78);
+      --bg-card-subtle: rgba(30, 41, 59, 0.6);
+      --border-card: rgba(255, 255, 255, 0.09);
+      --border-card-glow: rgba(99, 102, 241, 0.45);
+      --text-primary: #f8fafc;
+      --text-secondary: #cbd5e1;
+      --text-muted: #94a3b8;
+      --accent-primary: #6366f1;
+      --accent-primary-light: #818cf8;
+      --accent-cyan: #38bdf8;
+      --accent-emerald: #10b981;
+      --accent-coral: #f43f5e;
+      --accent-amber: #f59e0b;
+      --card-shadow: 0 14px 40px rgba(0, 0, 0, 0.5);
+      --card-shadow-hover: 0 20px 45px rgba(99, 102, 241, 0.25);
+      --orb-opacity: 0.65;
+      --pill-bg: rgba(16, 185, 129, 0.16);
+      --pill-border: rgba(16, 185, 129, 0.5);
+      --pill-text: #34d399;
+      --input-bg: rgba(255, 255, 255, 0.06);
+      --input-border: rgba(255, 255, 255, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    body, html {
+      width: 100%;
+      height: 100%;
+      background: var(--bg-canvas);
+      background-image: var(--bg-canvas-gradient);
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      color: var(--text-primary);
+      overflow-x: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      transition: background 0.35s ease, color 0.35s ease;
+    }
+
+    /* Ambient Glowing Orbs */
+    .ambient-bg {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      overflow: hidden;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .orb-cyan {
+      position: absolute;
+      top: -12%; left: 8%;
+      width: 360px; height: 360px;
+      background: radial-gradient(circle, rgba(14, 165, 233, var(--orb-opacity)) 0%, transparent 70%);
+      filter: blur(70px);
+      animation: pulseOrb 4.5s infinite alternate ease-in-out;
+    }
+    .orb-purple {
+      position: absolute;
+      bottom: -10%; right: 8%;
+      width: 350px; height: 350px;
+      background: radial-gradient(circle, rgba(139, 92, 246, var(--orb-opacity)) 0%, transparent 70%);
+      filter: blur(70px);
+      animation: pulseOrb 5.5s infinite alternate-reverse ease-in-out;
+    }
+    @keyframes pulseOrb {
+      0% { transform: scale(0.92) translate(0, 0); opacity: 0.6; }
+      100% { transform: scale(1.18) translate(15px, -15px); opacity: 0.95; }
+    }
+
+    /* Top Command Container */
+    .container {
+      position: relative;
+      z-index: 10;
+      width: 100%;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 24px 20px 24px 20px;
+      max-width: 440px;
+      margin: 0 auto;
+    }
+
+    /* ================= 1. STANDBY VIEW ================= */
+    #standbyView {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      flex: 1;
+    }
+
+    /* ================= TOP STATUS BAR & THEME SWITCHER ================= */
+    .standby-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+    }
+    .armed-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 14px;
+      border-radius: 30px;
+      background: var(--pill-bg);
+      border: 1px solid var(--pill-border);
+      color: var(--pill-text);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.7px;
+      text-transform: uppercase;
+      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.15);
+    }
+    .armed-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 10px #10b981;
+      animation: blinkDot 1.5s infinite ease-in-out;
+    }
+    @keyframes blinkDot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.8); }
+    }
+
+    .top-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .theme-toggle-btn {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 20px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      box-shadow: var(--card-shadow);
+      transition: all 0.2s;
+    }
+    .theme-toggle-btn:hover {
+      transform: scale(1.04);
+      border-color: var(--accent-primary-light);
+    }
+    .audio-indicator-badge {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      font-weight: 600;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      padding: 6px 10px;
+      border-radius: 20px;
+    }
+
+    /* ================= 3D HOLOGRAPHIC AI NEURAL CORE ================= */
+    .holo-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 24px;
+      padding: 16px 16px 14px 16px;
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      box-shadow: var(--card-shadow);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .holo-card:hover {
+      box-shadow: var(--card-shadow-hover);
+      border-color: var(--border-card-glow);
+    }
+
+    .holo-hud-top {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+    .holo-tag-left {
+      color: var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .holo-tag-right {
+      color: var(--accent-primary-light);
+      background: rgba(99, 102, 241, 0.08);
+      padding: 2px 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(99, 102, 241, 0.2);
+    }
+
+    .holo-canvas-wrap {
+      width: 100%;
+      height: 195px;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: grab;
+    }
+    .holo-canvas-wrap:active {
+      cursor: grabbing;
+    }
+    #holo3dCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      outline: none;
+    }
+
+    .holo-hud-bottom {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 4px;
+      padding-top: 8px;
+      border-top: 1px dashed var(--border-card);
+    }
+    .holo-model-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .holo-latency-pill {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--accent-emerald);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* ================= REAL-TIME CLOCK ================= */
+    .live-clock-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 22px;
+      padding: 20px 18px;
+      text-align: center;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: var(--card-shadow);
+      margin-top: 14px;
+      transition: all 0.3s;
+    }
+    .live-clock-card:hover {
+      box-shadow: var(--card-shadow-hover);
+      border-color: var(--border-card-glow);
+    }
+    .clock-time {
+      font-family: 'Outfit', sans-serif;
+      font-size: 40px;
+      font-weight: 900;
+      letter-spacing: -1.2px;
+      color: var(--text-primary);
+      line-height: 1.1;
+      margin-bottom: 4px;
+    }
+    .clock-date {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: 0.2px;
+    }
+
+    /* ================= DEADLINE TRACKER ================= */
+    .monitor-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      border-radius: 22px;
+      padding: 18px;
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      box-shadow: var(--card-shadow);
+      margin-top: 14px;
+    }
+    .card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .deadline-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+    .deadline-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: var(--bg-card-subtle);
+      border: 1px solid var(--border-card);
+      transition: all 0.2s;
+    }
+    .deadline-item:hover {
+      border-color: var(--border-card-glow);
+      transform: translateY(-1px);
+    }
+    .dl-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+    .dl-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+    .dl-countdown {
+      font-family: 'Outfit', sans-serif;
+      font-size: 13.5px;
+      font-weight: 800;
+      color: var(--accent-amber);
+      padding: 4px 9px;
+      background: rgba(245, 158, 11, 0.12);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: 8px;
+      letter-spacing: 0.5px;
+    }
+    .dl-countdown.overdue {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.45);
+      animation: blinkDot 1s infinite;
+    }
+
+    /* Demo Trigger Action Bar */
+    .demo-bar {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .ui-action-btn {
+      width: 100%;
+      border: none;
+      border-radius: 18px;
+      padding: 15px 18px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      transition: transform 0.15s, box-shadow 0.2s;
+      letter-spacing: 0.2px;
+    }
+    .ui-action-btn:active {
+      transform: scale(0.97);
+    }
+    .btn-ring {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(239, 68, 68, 0.35);
+    }
+    .btn-ring:hover {
+      box-shadow: 0 12px 28px rgba(239, 68, 68, 0.45);
+    }
+    .btn-demo {
+      background: linear-gradient(135deg, #4f46e5, #0284c7);
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(79, 70, 229, 0.32);
+    }
+    .btn-demo:hover {
+      box-shadow: 0 12px 28px rgba(79, 70, 229, 0.42);
+    }
+    .audio-ready-hint {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.45;
+      padding: 2px 6px;
+    }
+
+    /* ================= 2. ACTIVE CALL VIEW ================= */
+    #callView {
+      display: none;
+      flex-direction: column;
+      justify-content: space-between;
+      width: 100%;
+      min-height: 84vh;
+      flex: 1;
+    }
+
+    .caller-header {
+      text-align: center;
+      margin-top: 6px;
+    }
+    .caller-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 30px;
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #ef4444;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .caller-pill.connected {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: rgba(16, 185, 129, 0.5);
+      color: #059669;
+    }
+    [data-theme="dark"] .caller-pill.connected {
+      color: #34d399;
+    }
+    .call-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: -0.6px;
+      color: var(--text-primary);
+      margin-bottom: 3px;
+    }
+    .call-subtitle {
+      font-size: 13.5px;
+      color: #ef4444;
+      font-weight: 700;
+    }
+
+    /* In-Call 3D Stage */
+    .call-3d-stage {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      margin: 12px 0;
+      position: relative;
+    }
+    .call-3d-box {
+      width: 100%;
+      height: 250px;
+      border-radius: 24px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      backdrop-filter: blur(28px);
+      box-shadow: var(--card-shadow);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    #call3dCanvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    .call-hud-top {
+      position: absolute;
+      top: 12px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 3;
+      pointer-events: none;
+    }
+    .call-hud-badge {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      padding: 3px 9px;
+      border-radius: 8px;
+      text-transform: uppercase;
+    }
+    .call-hud-badge.alert {
+      background: rgba(239, 68, 68, 0.14);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #ef4444;
+      animation: blinkDot 1.2s infinite ease-in-out;
+    }
+    .call-hud-badge.live {
+      background: rgba(14, 165, 233, 0.14);
+      border: 1px solid rgba(14, 165, 233, 0.4);
+      color: var(--accent-cyan);
+    }
+    .call-hud-bottom {
+      position: absolute;
+      bottom: 10px;
+      left: 14px;
+      right: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 3;
+      pointer-events: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10.5px;
+      font-weight: 700;
+    }
+    .call-model-tag {
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 11.5px;
+    }
+    .call-state-tag {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.12);
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      font-size: 10px;
+    }
+
+    /* Wave visualizer */
+    .wave-box {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      height: 38px;
+      margin-top: 14px;
+      padding: 0 10px;
+    }
+    .wb {
+      width: 4px;
+      height: 12px;
+      background: linear-gradient(180deg, var(--accent-cyan), var(--accent-primary-light));
+      border-radius: 99px;
+      animation: barOsc 1.2s infinite ease-in-out;
+      transform-origin: center;
+    }
+    .wb:nth-child(2) { animation-delay: 0.15s; }
+    .wb:nth-child(3) { animation-delay: 0.3s; }
+    .wb:nth-child(4) { animation-delay: 0.45s; }
+    .wb:nth-child(5) { animation-delay: 0.6s; }
+    .wb:nth-child(6) { animation-delay: 0.45s; }
+    .wb:nth-child(7) { animation-delay: 0.3s; }
+    .wb:nth-child(8) { animation-delay: 0.15s; }
+    .wb:nth-child(9) { animation-delay: 0.25s; }
+    .wb:nth-child(10) { animation-delay: 0.4s; }
+    @keyframes barOsc {
+      0%, 100% { height: 10px; transform: scaleY(0.6); }
+      50% { height: 36px; transform: scaleY(1.3); }
+    }
+
+    /* Live transcript bubble */
+    .call-transcript {
+      margin-top: 14px;
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid var(--border-card);
+      backdrop-filter: blur(24px);
+      border-radius: 20px;
+      padding: 16px 18px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: var(--text-primary);
+      text-align: center;
+      min-height: 75px;
+      max-height: 125px;
+      overflow-y: auto;
+      box-shadow: var(--card-shadow);
+    }
+
+    /* Incoming Accept/Decline */
+    .incoming-btns {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      max-width: 300px;
+      margin: 10px auto 0 auto;
+    }
+    .action-col {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+    .round-btn {
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.15s, box-shadow 0.2s;
+    }
+    .round-btn:active { transform: scale(0.9); }
+    .btn-dec {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #fff;
+      box-shadow: 0 10px 25px rgba(239, 68, 68, 0.4);
+    }
+    .btn-acc {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+      animation: pulseGreen 1.6s infinite ease-in-out;
+      box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+    }
+    @keyframes pulseGreen {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1.06); box-shadow: 0 0 0 16px rgba(16, 185, 129, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+    .btn-txt {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-muted);
+    }
+
+    /* Connected In-Call Voice Input Controls */
+    .connected-panel {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      gap: 12px;
+      margin-top: 8px;
+    }
+    .talk-box {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+    }
+    .talk-input-field {
+      flex: 1;
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 16px;
+      padding: 13px 16px;
+      font-size: 14px;
+      color: var(--text-primary);
+      outline: none;
+      font-family: inherit;
+      transition: border 0.2s;
+    }
+    .talk-input-field:focus {
+      border-color: var(--accent-primary-light);
+    }
+    .talk-input-field::placeholder { color: var(--text-muted); }
+    .mic-icon-btn {
+      background: rgba(239, 68, 68, 0.12);
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      color: #ef4444;
+      border-radius: 16px;
+      padding: 0 16px;
+      font-size: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .mic-icon-btn.active {
+      background: #ef4444;
+      color: #fff;
+      animation: pulseGreen 1s infinite;
+    }
+    .talk-action-btn {
+      background: linear-gradient(135deg, var(--accent-primary), var(--accent-cyan));
+      border: none;
+      border-radius: 16px;
+      color: #fff;
+      padding: 0 18px;
+      font-size: 13.5px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+    .hangup-circle {
+      width: 62px;
+      height: 62px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #fff;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(239, 68, 68, 0.45);
+      margin-top: 4px;
+      transition: transform 0.15s;
+    }
+    .hangup-circle:active {
+      transform: scale(0.92);
+    }
+    .natural-voice-hint {
+      font-size: 11.5px;
+      color: var(--text-muted);
+      text-align: center;
+      line-height: 1.45;
+    }
+  </style>
+</head>
+<body onclick="ensureAudioContextUnlocked()">
+
+  <!-- Ambient Glowing Backdrop -->
+  <div class="ambient-bg">
+    <div class="orb-cyan"></div>
+    <div class="orb-purple"></div>
+  </div>
+
+  <!-- Audio Elements -->
+  <audio id="ringerAudio" src="/api/voice/ringtone.wav" loop preload="auto" playsinline></audio>
+  <audio id="speechAudio" preload="auto" playsinline></audio>
+
+  <div class="container">
+    
+    <!-- ================= 1. STANDBY VIEW (LIGHT THEME DEFAULT) ================= -->
+    <div id="standbyView">
+      
+      <!-- Top Status Header & Theme Switcher -->
+      <div class="standby-header">
+        <div class="armed-pill">
+          <span class="armed-dot"></span>
+          <span>Sentinel Armed</span>
+        </div>
+        
+        <div class="top-actions">
+          <div class="audio-indicator-badge" id="audioIndicator">
+            🔊 Audio Ready
+          </div>
+          <button class="theme-toggle-btn" onclick="toggleTheme()" id="themeToggleBtn" title="Toggle Theme">
+            ☀️ Light
+          </button>
+        </div>
+      </div>
+
+      <!-- 3D Holographic AI Neural Core (Ollama / Llama-3.2) -->
+      <div class="holo-card">
+        <div class="holo-hud-top">
+          <span class="holo-tag-left"><span>🌐</span> QUANTUM NEURAL FIELD</span>
+          <span class="holo-tag-right">AI CO-PILOT 3D</span>
+        </div>
+        
+        <div class="holo-canvas-wrap" id="standbyHoloWrap">
+          <canvas id="holo3dCanvas"></canvas>
+        </div>
+
+        <div class="holo-hud-bottom">
+          <div class="holo-model-name">
+            <span>🧠</span>
+            <span>Ollama • Llama-3.2 Engine</span>
+          </div>
+          <div class="holo-latency-pill">
+            <span>●</span>
+            <span>LIVE 60 FPS</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Real-time Clock Card -->
+      <div class="live-clock-card">
+        <div class="clock-time" id="clockDisplay">--:--:--</div>
+        <div class="clock-date" id="dateDisplay">Real-Time Clock</div>
+      </div>
+
+      <!-- Upcoming Deadlines Card (Direct Real Database Query) -->
+      <div class="monitor-card">
+        <div class="card-title">
+          <span>📅 Upcoming Deadlines</span>
+          <span style="font-size: 11px; color: var(--accent-cyan); font-weight: 700;">Live SQLite Telemetry</span>
+        </div>
+        <div class="deadline-list" id="deadlineList">
+          <div style="text-align: center; font-size: 12px; color: var(--text-muted); padding: 12px;">
+            Scanning real database deadlines...
+          </div>
+        </div>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="demo-bar">
+        <button class="ui-action-btn btn-ring" onclick="testInstantRing(event)">
+          <span>🔔</span>
+          <span>Test Instant Ring & Vibrate Now</span>
+        </button>
+        <button class="ui-action-btn btn-demo" onclick="triggerDemoDeadline(event)">
+          <span>⏱️</span>
+          <span>Start 30s Real-Time Demo</span>
+        </button>
+        <button class="ui-action-btn" onclick="triggerDemoSleepAlert(event)" style="background: linear-gradient(135deg, #6366f1, #3b82f6); color: white;">
+          <span>🌙</span>
+          <span>Simulate Low Sleep Call (< 5h)</span>
+        </button>
+        <button class="ui-action-btn" onclick="triggerDemoHealthAlert(event)" style="background: linear-gradient(135deg, #f59e0b, #ef4444); color: white;">
+          <span>🩺</span>
+          <span>Simulate Health Depreciating Alert</span>
+        </button>
+        <div class="audio-ready-hint">
+          Keep this screen open on your phone. When a real deadline expires, sleep drops critically (< 6h), or health depreciates, CampusLife AI automatically calls you in 3D audio!
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ================= 2. ACTIVE CALL VIEW (HOLOGRAPHIC 3D INCOMING & CALL) ================= -->
+    <div id="callView">
+      
+      <div class="caller-header">
+        <div class="caller-pill" id="callStatusPill">
+          <span>Incoming 3D AI Call...</span>
+        </div>
+        <h1 class="call-title" id="callTitle">CampusLife Co-Pilot</h1>
+        <p class="call-subtitle" id="callSubtitle">⚠️ Autonomous Intervention</p>
+      </div>
+
+      <!-- In-Call 3D Stage -->
+      <div class="call-3d-stage">
+        <div class="call-3d-box">
+          <div class="call-hud-top">
+            <span class="call-hud-badge alert" id="call3dTopAlert">🚨 INCOMING 3D AI BEACON</span>
+            <span class="call-hud-badge live">60 FPS ACTIVE</span>
+          </div>
+
+          <canvas id="call3dCanvas"></canvas>
+
+          <div class="call-hud-bottom">
+            <span class="call-model-tag"><span>🧠</span> LLAMA-3.2 NEURAL AVATAR</span>
+            <span class="call-state-tag" id="call3dStateTag">Incoming Beacon...</span>
+          </div>
+        </div>
+
+        <div class="wave-box" id="waveBox">
+          <div class="wb"></div>
+          <div class="wb"></div>
+          <div class="wb"></div>
+          <div class="wb"></div>
+          <div class="wb"></div>
+          <div class="wb"></div>
+          <div class="wb"></div>
+          <div class="wb"></div>
+          <div class="wb"></div>
+          <div class="wb"></div>
+        </div>
+
+        <div class="call-transcript" id="callTranscript">
+          Your deadline has arrived. Tap Accept to connect with your 3D AI mentor.
+        </div>
+      </div>
+
+      <!-- Accept / Decline Buttons (Shown when ringing) -->
+      <div class="incoming-btns" id="incomingBtns">
+        <div class="action-col" onclick="declineCall(event)">
+          <button class="round-btn btn-dec">✕</button>
+          <div class="btn-txt" style="color: #ef4444;">Decline</div>
+        </div>
+        <div class="action-col" onclick="acceptCall(event)">
+          <button class="round-btn btn-acc">📞</button>
+          <div class="btn-txt" style="color: #10b981;">Accept Call</div>
+        </div>
+      </div>
+
+      <!-- Connected In-Call Panel (Shown when accepted) -->
+      <div class="connected-panel" id="connectedPanel">
+        <div class="talk-box">
+          <button class="mic-icon-btn" id="micBtn" onclick="toggleMic(event)" title="Speak into Mic">🎙️</button>
+          <input type="text" id="voiceTextInput" class="talk-input-field" placeholder="Speak or type to Llama 3.2..." onkeydown="if(event.key==='Enter') sendSpokenInput()">
+          <button class="talk-action-btn" onclick="sendSpokenInput()">Talk</button>
+        </div>
+
+        <button class="hangup-circle" onclick="endCall(event)" aria-label="Hang Up">✕</button>
+        
+        <div class="natural-voice-hint">
+          🗣️ <strong>Speak naturally in your voice:</strong><br>
+          "I finished it" • "Extend deadline by 1 hour" • "Make it high priority"
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    // ================= 1. THEME CONTROLLER (DEFAULT LIGHT) =================
+    function initTheme() {
+      const savedTheme = localStorage.getItem('campuslife_mobile_theme') || 'light';
+      setTheme(savedTheme);
+    }
+
+    function toggleTheme() {
+      const current = document.documentElement.getAttribute('data-theme') || 'light';
+      const next = current === 'light' ? 'dark' : 'light';
+      setTheme(next);
+    }
+
+    function setTheme(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      localStorage.setItem('campuslife_mobile_theme', theme);
+      const btn = document.getElementById('themeToggleBtn');
+      if (btn) {
+        btn.innerHTML = theme === 'light' ? '☀️ Light' : '🌙 Dark';
+      }
+      // Re-tint 3D scene colors smoothly
+      update3DThemeColors(theme);
+    }
+
+    // ================= 2. HIGH-TECH 3D THREE.JS HOLOGRAPHIC SCENES =================
+    let standbyScene, standbyCamera, standbyRenderer;
+    let standbyCore, standbyRing1, standbyRing2, standbyRing3, standbyParticles;
+    let callScene, callCamera, callRenderer;
+    let callCore, callRing1, callRing2, callParticles;
+
+    let targetRotX = 0, targetRotY = 0;
+    let currentRotX = 0, currentRotY = 0;
+    let isDragging3D = false;
+    let previousMousePosition = { x: 0, y: 0 };
+    let audioIntensity = 0.1;
+    let current3DMode = 'standby'; // 'standby' | 'ringing' | 'connected'
+
+    function initStandby3D() {
+      const container = document.getElementById('standbyHoloWrap');
+      const canvas = document.getElementById('holo3dCanvas');
+      if (!container || !canvas || !window.THREE) return;
+
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+
+      standbyScene = new THREE.Scene();
+      standbyCamera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+      standbyCamera.position.z = 6.2;
+
+      standbyRenderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+      standbyRenderer.setSize(width, height);
+      standbyRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      // Lighting
+      const ambLight = new THREE.AmbientLight(0xffffff, 0.85);
+      standbyScene.add(ambLight);
+
+      const ptLight1 = new THREE.PointLight(0x6366f1, 2.5, 20);
+      ptLight1.position.set(5, 5, 5);
+      standbyScene.add(ptLight1);
+
+      const ptLight2 = new THREE.PointLight(0x0284c7, 2.2, 20);
+      ptLight2.position.set(-5, -3, 3);
+      standbyScene.add(ptLight2);
+
+      // Core Polyhedron (Neural Brain / Ollama Core)
+      const coreGeo = new THREE.IcosahedronGeometry(1.4, 1);
+      const coreMat = new THREE.MeshStandardMaterial({
+        color: 0x4f46e5,
+        wireframe: true,
+        roughness: 0.2,
+        metalness: 0.9,
+        emissive: 0x312e81,
+        emissiveIntensity: 0.6
+      });
+      standbyCore = new THREE.Mesh(coreGeo, coreMat);
+      standbyScene.add(standbyCore);
+
+      // Inner Glowing Sphere
+      const innerGeo = new THREE.SphereGeometry(0.85, 24, 24);
+      const innerMat = new THREE.MeshBasicMaterial({
+        color: 0x38bdf8,
+        wireframe: false,
+        transparent: true,
+        opacity: 0.75
+      });
+      const innerOrb = new THREE.Mesh(innerGeo, innerMat);
+      standbyCore.add(innerOrb);
+
+      // Orbital Gyro-Rings
+      const ringMat1 = new THREE.MeshStandardMaterial({ color: 0x6366f1, emissive: 0x4f46e5, roughness: 0.3 });
+      const ringMat2 = new THREE.MeshStandardMaterial({ color: 0x0284c7, emissive: 0x0369a1, roughness: 0.3 });
+      const ringMat3 = new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x059669, roughness: 0.3 });
+
+      standbyRing1 = new THREE.Mesh(new THREE.TorusGeometry(2.0, 0.035, 16, 80), ringMat1);
+      standbyRing2 = new THREE.Mesh(new THREE.TorusGeometry(2.4, 0.035, 16, 80), ringMat2);
+      standbyRing3 = new THREE.Mesh(new THREE.TorusGeometry(2.8, 0.028, 16, 80), ringMat3);
+
+      standbyRing1.rotation.x = Math.PI / 3;
+      standbyRing2.rotation.y = Math.PI / 4;
+      standbyRing3.rotation.z = Math.PI / 6;
+
+      standbyScene.add(standbyRing1);
+      standbyScene.add(standbyRing2);
+      standbyScene.add(standbyRing3);
+
+      // Quantum Synapse Particles
+      const partCount = 180;
+      const partGeo = new THREE.BufferGeometry();
+      const posArray = new Float32Array(partCount * 3);
+      for (let i = 0; i < partCount * 3; i += 3) {
+        const rad = 2.2 + Math.random() * 1.6;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        posArray[i] = rad * Math.sin(phi) * Math.cos(theta);
+        posArray[i + 1] = rad * Math.sin(phi) * Math.sin(theta);
+        posArray[i + 2] = rad * Math.cos(phi);
+      }
+      partGeo.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+      const partMat = new THREE.PointsMaterial({
+        size: 0.065,
+        color: 0x0284c7,
+        transparent: true,
+        opacity: 0.85
+      });
+      standbyParticles = new THREE.Points(partGeo, partMat);
+      standbyScene.add(standbyParticles);
+
+      // Touch / Drag Interaction
+      container.addEventListener('pointerdown', (e) => {
+        isDragging3D = true;
+        previousMousePosition = { x: e.clientX, y: e.clientY };
+      });
+      window.addEventListener('pointermove', (e) => {
+        if (!isDragging3D) return;
+        const deltaX = e.clientX - previousMousePosition.x;
+        const deltaY = e.clientY - previousMousePosition.y;
+        targetRotY += deltaX * 0.012;
+        targetRotX += deltaY * 0.012;
+        previousMousePosition = { x: e.clientX, y: e.clientY };
+      });
+      window.addEventListener('pointerup', () => { isDragging3D = false; });
+
+      // Resize observer
+      window.addEventListener('resize', resizeStandby3D);
+
+      animateStandby3D();
+    }
+
+    function resizeStandby3D() {
+      const container = document.getElementById('standbyHoloWrap');
+      if (!container || !standbyRenderer || !standbyCamera) return;
+      const w = container.clientWidth || 380;
+      const h = container.clientHeight || 195;
+      if (w > 0 && h > 0) {
+        standbyCamera.aspect = w / h;
+        standbyCamera.updateProjectionMatrix();
+        standbyRenderer.setSize(w, h);
+      }
+    }
+
+    function animateStandby3D() {
+      requestAnimationFrame(animateStandby3D);
+      const time = performance.now() * 0.0006;
+
+      // Smooth interpolation for drag
+      currentRotX += (targetRotX - currentRotX) * 0.08;
+      currentRotY += (targetRotY - currentRotY) * 0.08;
+
+      if (standbyCore) {
+        standbyCore.rotation.y = time * 0.35 + currentRotY;
+        standbyCore.rotation.x = Math.sin(time * 0.3) * 0.15 + currentRotX;
+        
+        // Gentle breathing pulse
+        const pulse = 1.0 + Math.sin(time * 2.0) * 0.035;
+        standbyCore.scale.set(pulse, pulse, pulse);
+      }
+
+      if (standbyRing1) standbyRing1.rotation.y = -time * 0.45;
+      if (standbyRing2) standbyRing2.rotation.x = time * 0.38;
+      if (standbyRing3) standbyRing3.rotation.z = time * 0.3;
+
+      if (standbyParticles) {
+        standbyParticles.rotation.y = time * 0.12;
+      }
+
+      if (standbyRenderer && standbyScene && standbyCamera) {
+        standbyRenderer.render(standbyScene, standbyCamera);
+      }
+    }
+
+    // ================= 3D CALL SCENE (RINGING & IN-CALL AUDIO REACTIVE) =================
+    function resizeCall3D() {
+      const container = document.querySelector('.call-3d-box');
+      if (!container || !callRenderer || !callCamera) return;
+      const w = container.clientWidth || 380;
+      const h = container.clientHeight || 250;
+      if (w > 0 && h > 0) {
+        callCamera.aspect = w / h;
+        callCamera.updateProjectionMatrix();
+        callRenderer.setSize(w, h);
+      }
+    }
+
+    function initCall3D() {
+      const container = document.querySelector('.call-3d-box');
+      const canvas = document.getElementById('call3dCanvas');
+      if (!container || !canvas || !window.THREE) return;
+
+      const width = container.clientWidth || 380;
+      const height = container.clientHeight || 250;
+
+      callScene = new THREE.Scene();
+      callCamera = new THREE.PerspectiveCamera(45, (width > 0 && height > 0) ? (width / height) : (380 / 250), 0.1, 100);
+      callCamera.position.z = 6.0;
+
+      callRenderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+      callRenderer.setSize(width, height);
+      callRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      // Lighting
+      const amb = new THREE.AmbientLight(0xffffff, 1.2);
+      callScene.add(amb);
+
+      const pLight1 = new THREE.PointLight(0xef4444, 4, 30);
+      pLight1.position.set(4, 4, 5);
+      callScene.add(pLight1);
+
+      const pLight2 = new THREE.PointLight(0x06b6d4, 3.5, 30);
+      pLight2.position.set(-4, -4, 5);
+      callScene.add(pLight2);
+
+      // Audio-reactive Icosahedron Core
+      const coreGeo = new THREE.IcosahedronGeometry(1.5, 2);
+      const coreMat = new THREE.MeshStandardMaterial({
+        color: 0xef4444,
+        roughness: 0.15,
+        metalness: 0.8,
+        wireframe: true,
+        emissive: 0xdc2626,
+        emissiveIntensity: 0.8
+      });
+      callCore = new THREE.Mesh(coreGeo, coreMat);
+      callScene.add(callCore);
+
+      // Inner glowing core
+      const innerGeo = new THREE.SphereGeometry(0.92, 32, 32);
+      const innerMat = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.88 });
+      const innerCore = new THREE.Mesh(innerGeo, innerMat);
+      callCore.add(innerCore);
+
+      // Shockwave Gyro Rings
+      const ringMat1 = new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0xb91c1c, roughness: 0.2 });
+      const ringMat2 = new THREE.MeshStandardMaterial({ color: 0x06b6d4, emissive: 0x0891b2, roughness: 0.2 });
+
+      callRing1 = new THREE.Mesh(new THREE.TorusGeometry(2.2, 0.045, 16, 90), ringMat1);
+      callRing2 = new THREE.Mesh(new THREE.TorusGeometry(2.6, 0.045, 16, 90), ringMat2);
+      callRing1.rotation.x = Math.PI / 4;
+      callRing2.rotation.y = Math.PI / 3;
+      callScene.add(callRing1);
+      callScene.add(callRing2);
+
+      // Particle Field
+      const partCount = 200;
+      const partGeo = new THREE.BufferGeometry();
+      const pos = new Float32Array(partCount * 3);
+      for (let i = 0; i < partCount * 3; i += 3) {
+        const rad = 2.0 + Math.random() * 1.8;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = Math.acos(2 * Math.random() - 1);
+        pos[i] = rad * Math.sin(phi) * Math.cos(theta);
+        pos[i + 1] = rad * Math.sin(phi) * Math.sin(theta);
+        pos[i + 2] = rad * Math.cos(phi);
+      }
+      partGeo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+      callParticles = new THREE.Points(partGeo, new THREE.PointsMaterial({ size: 0.08, color: 0xef4444, transparent: true, opacity: 0.85 }));
+      callScene.add(callParticles);
+
+      window.addEventListener('resize', resizeCall3D);
+
+      animateCall3D();
+    }
+
+    // ================= SOUND DESIGN: WEB AUDIO API MICRO-CHIMES =================
+    let audioCtx = null;
+    function getAudioContext() {
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+
+    // Gentle quantum chime when 3D call connects (C5 -> E5 -> G5 bell)
+    function playQuantumChime() {
+      try {
+        const ctx = getAudioContext();
+        const freqs = [523.25, 659.25, 783.99];
+        freqs.forEach((f, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(f, ctx.currentTime + i * 0.08);
+          gain.gain.setValueAtTime(0.001, ctx.currentTime + i * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.2, ctx.currentTime + i * 0.08 + 0.03);
+          gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + i * 0.08 + 0.55);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + i * 0.08);
+          osc.stop(ctx.currentTime + i * 0.08 + 0.6);
+        });
+      } catch(e) {}
+    }
+
+    // Soft pinging when AI starts thinking
+    function playProcessingPing() {
+      try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, ctx.currentTime);
+        gain.gain.setValueAtTime(0.07, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.16);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.18);
+      } catch(e) {}
+    }
+
+    // Satisfying celebratory completion chime when a task is checked off (D5 -> A5)
+    function playCompletionTone() {
+      try {
+        const ctx = getAudioContext();
+        const freqs = [587.33, 880.0];
+        freqs.forEach((f, i) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'triangle';
+          osc.frequency.setValueAtTime(f, ctx.currentTime + i * 0.1);
+          gain.gain.setValueAtTime(0.18, ctx.currentTime + i * 0.1);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.1 + 0.45);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + i * 0.1);
+          osc.stop(ctx.currentTime + i * 0.1 + 0.5);
+        });
+        if (navigator.vibrate) navigator.vibrate([60, 40, 90]);
+        set3DCallMode('celebratory');
+        setTimeout(() => { if (isCallActive) set3DCallMode('connected'); }, 2600);
+      } catch(e) {}
+    }
+
+    // Full-Duplex Interruptibility: Instantly silence AI speech when user begins speaking
+    function stopAISpeech() {
+      if ('speechSynthesis' in window && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+      }
+      try { speechAudio.pause(); } catch(e) {}
+      audioIntensity = 0.2;
+      const trans = document.getElementById('transcriptBox');
+      if (trans && trans.innerText.startsWith('AI:')) {
+        trans.innerText += " [Interrupted]";
+      }
+    }
+
+    function set3DCallMode(mode) {
+      current3DMode = mode;
+      const topAlert = document.getElementById('call3dTopAlert');
+      const stateTag = document.getElementById('call3dStateTag');
+
+      if (mode === 'ringing') {
+        if (callCore) {
+          callCore.material.color.setHex(0xef4444);
+          callCore.material.emissive.setHex(0xdc2626);
+        }
+        if (callRing1) {
+          callRing1.material.color.setHex(0xef4444);
+          callRing1.material.emissive.setHex(0xb91c1c);
+        }
+        if (callRing2) {
+          callRing2.material.color.setHex(0x06b6d4);
+          callRing2.material.emissive.setHex(0x0891b2);
+        }
+        if (callParticles) callParticles.material.color.setHex(0xef4444);
+
+        if (topAlert) {
+          topAlert.innerText = "🚨 INCOMING 3D AI BEACON";
+          topAlert.className = "call-hud-badge alert";
+        }
+        if (stateTag) {
+          stateTag.innerText = "Incoming Beacon...";
+          stateTag.style.color = "#ef4444";
+          stateTag.style.background = "rgba(239, 68, 68, 0.12)";
+          stateTag.style.borderColor = "rgba(239, 68, 68, 0.3)";
+        }
+      } else if (mode === 'critical_alert') {
+        // Critical Alert: Low sleep / high stress ruby-amber pulsing beacon
+        if (callCore) {
+          callCore.material.color.setHex(0xf59e0b);
+          callCore.material.emissive.setHex(0xd97706);
+        }
+        if (callRing1) {
+          callRing1.material.color.setHex(0xef4444);
+          callRing1.material.emissive.setHex(0xb91c1c);
+        }
+        if (callRing2) {
+          callRing2.material.color.setHex(0xf59e0b);
+          callRing2.material.emissive.setHex(0xb45309);
+        }
+        if (callParticles) callParticles.material.color.setHex(0xfbbf24);
+
+        if (topAlert) {
+          topAlert.innerText = "🔥 CRITICAL OVERLOAD ALERT";
+          topAlert.className = "call-hud-badge alert";
+        }
+        if (stateTag) {
+          stateTag.innerText = "Urgent Intercept";
+          stateTag.style.color = "#f59e0b";
+          stateTag.style.background = "rgba(245, 158, 11, 0.14)";
+          stateTag.style.borderColor = "rgba(245, 158, 11, 0.4)";
+        }
+      } else if (mode === 'celebratory') {
+        // Celebratory: Emerald green burst when task completed
+        if (callCore) {
+          callCore.material.color.setHex(0x10b981);
+          callCore.material.emissive.setHex(0x059669);
+        }
+        if (callRing1) {
+          callRing1.material.color.setHex(0x34d399);
+          callRing1.material.emissive.setHex(0x059669);
+        }
+        if (callRing2) {
+          callRing2.material.color.setHex(0x6ee7b7);
+          callRing2.material.emissive.setHex(0x10b981);
+        }
+        if (callParticles) callParticles.material.color.setHex(0x10b981);
+
+        if (topAlert) {
+          topAlert.innerText = "✨ TASK ACCOMPLISHED";
+          topAlert.className = "call-hud-badge live";
+        }
+        if (stateTag) {
+          stateTag.innerText = "Milestone Reached";
+          stateTag.style.color = "#10b981";
+          stateTag.style.background = "rgba(16, 185, 129, 0.2)";
+          stateTag.style.borderColor = "rgba(16, 185, 129, 0.5)";
+        }
+      } else if (mode === 'connected' || mode === 'calm') {
+        // Calm / Mentoring: Soft cyan, gentle breathing wave rotations
+        if (callCore) {
+          callCore.material.color.setHex(0x0284c7);
+          callCore.material.emissive.setHex(0x0369a1);
+        }
+        if (callRing1) {
+          callRing1.material.color.setHex(0x38bdf8);
+          callRing1.material.emissive.setHex(0x0284c7);
+        }
+        if (callRing2) {
+          callRing2.material.color.setHex(0x0ea5e9);
+          callRing2.material.emissive.setHex(0x0284c7);
+        }
+        if (callParticles) callParticles.material.color.setHex(0x38bdf8);
+
+        if (topAlert) {
+          topAlert.innerText = "⚡ ACTIVE 3D NEURAL CALL";
+          topAlert.className = "call-hud-badge live";
+        }
+        if (stateTag) {
+          stateTag.innerText = "Live AI Link";
+          stateTag.style.color = "#38bdf8";
+          stateTag.style.background = "rgba(56, 189, 248, 0.12)";
+          stateTag.style.borderColor = "rgba(56, 189, 248, 0.3)";
+        }
+      }
+    }
+
+    function animateCall3D() {
+      requestAnimationFrame(animateCall3D);
+      const time = performance.now() * 0.0007; // Calm, graceful time scale
+
+      if (current3DMode === 'ringing') {
+        // Smooth, gentle ringing alert pulse
+        const ringPulse = 1.0 + Math.sin(time * 3.5) * 0.08;
+        if (callCore) {
+          callCore.scale.set(ringPulse, ringPulse, ringPulse);
+          callCore.rotation.y += 0.008;
+          callCore.rotation.x += 0.004;
+        }
+        if (callRing1) {
+          callRing1.rotation.z += 0.009;
+          const rScale = 1.0 + Math.sin(time * 2.8) * 0.06;
+          callRing1.scale.set(rScale, rScale, rScale);
+        }
+        if (callRing2) callRing2.rotation.y += 0.007;
+        if (callParticles) callParticles.rotation.y += 0.005;
+
+      } else if (current3DMode === 'connected') {
+        // Smooth, relaxed audio-reactive breathing
+        const speechOsc = Math.sin(time * 4.0) * audioIntensity * 0.12;
+        const scale = 1.0 + speechOsc + Math.sin(time * 1.6) * 0.035;
+        
+        if (callCore) {
+          callCore.scale.set(scale, scale, scale);
+          callCore.rotation.y += 0.004 + audioIntensity * 0.005;
+          callCore.rotation.x += 0.002 + audioIntensity * 0.003;
+        }
+        if (callRing1) callRing1.rotation.y += 0.005 + audioIntensity * 0.005;
+        if (callRing2) callRing2.rotation.z -= 0.004 + audioIntensity * 0.005;
+        if (callParticles) callParticles.rotation.y += 0.003;
+      }
+
+      if (callRenderer && callScene && callCamera) {
+        callRenderer.render(callScene, callCamera);
+      }
+    }
+
+    function update3DThemeColors(theme) {
+      if (!standbyCore) return;
+      if (theme === 'light') {
+        standbyCore.material.color.setHex(0x4f46e5);
+        standbyCore.material.emissive.setHex(0x312e81);
+        standbyRing1.material.color.setHex(0x6366f1);
+        standbyRing2.material.color.setHex(0x0284c7);
+        standbyRing3.material.color.setHex(0x059669);
+        standbyParticles.material.color.setHex(0x0284c7);
+      } else {
+        standbyCore.material.color.setHex(0x818cf8);
+        standbyCore.material.emissive.setHex(0x4338ca);
+        standbyRing1.material.color.setHex(0x818cf8);
+        standbyRing2.material.color.setHex(0x38bdf8);
+        standbyRing3.material.color.setHex(0x34d399);
+        standbyParticles.material.color.setHex(0x38bdf8);
+      }
+    }
+
+    // ================= 3. AUDIO CONTEXT & REAL-TIME CLOCK =================
+    let isCallActive = false;
+    let isRinging = false;
+    let audioUnlocked = false;
+    let activeCallData = null;
+    let callTimerInterval = null;
+    let callSeconds = 0;
+    let speechRecognition = null;
+    let isListening = false;
+
+    const ringerAudio = document.getElementById('ringerAudio');
+    const speechAudio = document.getElementById('speechAudio');
+    const transcriptBox = document.getElementById('callTranscript');
+
+    function updateClock() {
+      const now = new Date();
+      const timeStr = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+      const dateStr = now.toLocaleDateString([], { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
+      document.getElementById('clockDisplay').innerText = timeStr;
+      document.getElementById('dateDisplay').innerText = dateStr;
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    function ensureAudioContextUnlocked() {
+      if (audioUnlocked) return;
+      audioUnlocked = true;
+      const ind = document.getElementById('audioIndicator');
+      if (ind) {
+        ind.innerText = "🔊 Audio Armed";
+        ind.style.color = "#059669";
+        ind.style.borderColor = "rgba(16, 185, 129, 0.4)";
+      }
+      ringerAudio.load();
+      speechAudio.load();
+    }
+    document.addEventListener('touchstart', ensureAudioContextUnlocked, { passive: true });
+    document.addEventListener('click', ensureAudioContextUnlocked);
+
+    // ================= 4. REAL-TIME DATABASE DEADLINE POLLING =================
+    async function refreshDeadlines() {
+      try {
+        const res = await fetch('/api/voice/deadlines/upcoming');
+        const tasks = await res.json();
+        const listContainer = document.getElementById('deadlineList');
+
+        if (!tasks || tasks.length === 0) {
+          listContainer.innerHTML = `
+            <div style="text-align: center; font-size: 12.5px; color: var(--text-muted); padding: 14px;">
+              🛡️ Database clean: No pending deadlines in SQLite. Use the buttons below to test!
+            </div>
+          `;
+          return;
+        }
+
+        listContainer.innerHTML = tasks.map(t => {
+          const rem = t.seconds_remaining || 0;
+          let timeBadge = '';
+          if (t.is_overdue) {
+            timeBadge = `<span class="dl-countdown overdue">DUE NOW</span>`;
+          } else {
+            const hrs = Math.floor(rem / 3600);
+            const mins = Math.floor((rem % 3600) / 60);
+            const secs = rem % 60;
+            let display = '';
+            if (hrs > 0) {
+              display = `${hrs}h ${mins}m`;
+            } else if (mins > 0) {
+              display = `${mins}m ${secs}s`;
+            } else {
+              display = `${secs}s`;
+            }
+            timeBadge = `<span class="dl-countdown">${display}</span>`;
+          }
+
+          const dueFmt = t.due_date_formatted ? ` • Due: ${t.due_date_formatted}` : '';
+
+          return `
+            <div class="deadline-item">
+              <div>
+                <div class="dl-title">${t.title}</div>
+                <div class="dl-subtitle">${t.subject} • Priority: ${t.priority}${dueFmt}</div>
+              </div>
+              <div>${timeBadge}</div>
+            </div>
+          `;
+        }).join('');
+
+      } catch(e) {}
+    }
+
+    setInterval(refreshDeadlines, 2000);
+    refreshDeadlines();
+
+    // ================= 5. START INSTANT RING & 30s REAL-TIME DEMO =================
+    function testInstantRing(e) {
+      if (e) e.stopPropagation();
+      ensureAudioContextUnlocked();
+      triggerIncomingCall({
+        caller_name: "CampusLife 3D Co-Pilot",
+        caller_subtitle: "Instant Call Test",
+        greeting: "Hello! This is CampusLife AI testing your mobile phone call connection in 3D. Your audio, microphone, and Ollama neural models are synchronized and functioning perfectly!",
+        call_id: "TEST_" + Date.now()
+      });
+    }
+
+    async function triggerDemoDeadline(e) {
+      if (e) e.stopPropagation();
+      ensureAudioContextUnlocked();
+
+      try {
+        const res = await fetch('/api/voice/demo/deadline', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            task_title: "Operating Systems Assignment",
+            seconds_from_now: 30,
+            priority: "HIGH"
+          })
+        });
+        const data = await res.json();
+        refreshDeadlines();
+
+        const btn = document.querySelector('.btn-demo');
+        btn.innerText = "⏳ 3D Demo Running! Ringing in 30s...";
+        btn.style.background = "linear-gradient(135deg, #10b981, #059669)";
+
+        setTimeout(() => {
+          btn.innerHTML = `<span>⏱️</span><span>Start 30s Real-Time Demo</span>`;
+          btn.style.background = "linear-gradient(135deg, #4f46e5, #0284c7)";
+        }, 32000);
+
+      } catch(err) {
+        alert("Error initiating demo deadline.");
+      }
+    }
+
+    async function triggerDemoSleepAlert(e) {
+      if (e) e.stopPropagation();
+      ensureAudioContextUnlocked();
+      try {
+        const res = await fetch('/api/voice/demo/sleep-alert', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ sleep_hours: 4.5 })
+        });
+        const data = await res.json();
+        console.log("Demo sleep alert triggered:", data);
+      } catch(err) {
+        alert("Error initiating demo sleep alert.");
+      }
+    }
+
+    async function triggerDemoHealthAlert(e) {
+      if (e) e.stopPropagation();
+      ensureAudioContextUnlocked();
+      try {
+        const res = await fetch('/api/voice/demo/health-alert', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({})
+        });
+        const data = await res.json();
+        console.log("Demo health alert triggered:", data);
+      } catch(err) {
+        alert("Error initiating demo health alert.");
+      }
+    }
+
+    // ================= 6. INCOMING CALL TRIGGER & 3D SWITCH =================
+    function triggerIncomingCall(callData) {
+      if (isCallActive) return;
+      activeCallData = callData;
+      isRinging = true;
+
+      // Switch view from Standby to Call View
+      const standby = document.getElementById('standbyView');
+      const callV = document.getElementById('callView');
+      standby.style.display = 'none';
+      callV.style.display = 'flex';
+      callV.style.flexDirection = 'column';
+      document.getElementById('incomingBtns').style.display = 'flex';
+      document.getElementById('connectedPanel').style.display = 'none';
+      document.getElementById('waveBox').style.display = 'none';
+
+      document.getElementById('callTitle').innerText = callData.caller_name || "CampusLife Co-Pilot";
+      document.getElementById('callSubtitle').innerText = callData.caller_subtitle || "⚠️ Autonomous Intervention";
+      
+      // Dynamic transcript / preview message according to alert type
+      if (callData.preview_text) {
+        transcriptBox.innerText = callData.preview_text;
+      } else if (callData.call_type === 'LOW_SLEEP') {
+        transcriptBox.innerText = `Sleep Alert: Only ${callData.sleep_hours || 4.5} hours recorded. Tap Accept Call to adjust your recovery plan.`;
+      } else if (callData.call_type === 'HEALTH_DEPRECIATION') {
+        transcriptBox.innerText = "Wellness Warning: High fatigue and stress detected. Tap Accept Call to protect your recovery.";
+      } else {
+        transcriptBox.innerText = `Deadline alert for "${callData.task_title || 'Operating Systems'}". Tap Accept Call to connect with your 3D AI mentor.`;
+      }
+
+      // Dynamic HUD tags
+      const topAlert = document.getElementById('call3dTopAlert');
+      const stateTag = document.getElementById('call3dStateTag');
+      if (callData.call_type === 'LOW_SLEEP') {
+        if (topAlert) topAlert.innerText = "🌙 CRITICAL SLEEP ALERT";
+        if (stateTag) stateTag.innerText = "Sleep Deficit Risk";
+      } else if (callData.call_type === 'HEALTH_DEPRECIATION') {
+        if (topAlert) topAlert.innerText = "🩺 HEALTH DEPRECIATING ALERT";
+        if (stateTag) stateTag.innerText = "Burnout Intercept";
+      } else {
+        if (topAlert) topAlert.innerText = "🚨 INCOMING 3D AI BEACON";
+        if (stateTag) stateTag.innerText = "Incoming Beacon...";
+      }
+
+      const pill = document.getElementById('callStatusPill');
+      pill.className = 'caller-pill';
+      pill.innerText = 'Incoming 3D AI Call...';
+
+      // Activate Ringing 3D Animation Mode
+      set3DCallMode('ringing');
+
+      // Immediately synchronize 3D camera and canvas viewport now that #callView is visible
+      resizeCall3D();
+      requestAnimationFrame(() => {
+        resizeCall3D();
+      });
+      setTimeout(() => {
+        resizeCall3D();
+      }, 60);
+
+      // Trigger Ringing Audio & Vibration
+      ringerAudio.volume = 1.0;
+      ringerAudio.currentTime = 0;
+      ringerAudio.play().catch(e => console.log("Audio play blocked by browser:", e));
+
+      try {
+        if (navigator.vibrate) navigator.vibrate([800, 400, 800, 400]);
+      } catch(e) {}
+    }
+
+    function stopRinging() {
+      isRinging = false;
+      try {
+        ringerAudio.pause();
+        ringerAudio.currentTime = 0;
+      } catch(e) {}
+      try {
+        if (navigator.vibrate) navigator.vibrate(0);
+      } catch(e) {}
+    }
+
+    // ================= 7. ACCEPT & DECLINE HANDLERS =================
+    function acceptCall(e) {
+      if (e) e.stopPropagation();
+      stopRinging();
+      playQuantumChime();
+      isCallActive = true;
+
+      // Switch to In-Call Controls
+      document.getElementById('incomingBtns').style.display = 'none';
+      document.getElementById('connectedPanel').style.display = 'flex';
+      document.getElementById('waveBox').style.display = 'flex';
+
+      const pill = document.getElementById('callStatusPill');
+      pill.classList.add('connected');
+      pill.innerText = '00:00';
+
+      // Switch 3D to Connected Audio-Reactive Mode
+      set3DCallMode('connected');
+
+      // Call Timer
+      callSeconds = 0;
+      if (callTimerInterval) clearInterval(callTimerInterval);
+      callTimerInterval = setInterval(() => {
+        callSeconds++;
+        const mins = String(Math.floor(callSeconds / 60)).padStart(2, '0');
+        const secs = String(callSeconds % 60).padStart(2, '0');
+        pill.innerText = `${mins}:${secs}`;
+      }, 1000);
+
+      // AI Spoken Greeting
+      const greeting = (activeCallData && activeCallData.greeting) 
+        ? activeCallData.greeting 
+        : "Hello! Your deadline for Operating Systems Assignment has arrived. Have you completed this task, or would you like to extend your deadline or adjust its priority?";
+      
+      transcriptBox.innerText = greeting;
+
+      playSpokenVoice(greeting, () => {
+        startVoiceRecognition();
+      });
+    }
+
+    function declineCall(e) {
+      if (e) e.stopPropagation();
+      stopRinging();
+      returnToStandby();
+    }
+
+    function endCall(e) {
+      if (e) e.stopPropagation();
+      isCallActive = false;
+      stopRinging();
+      if (callTimerInterval) clearInterval(callTimerInterval);
+      try { speechAudio.pause(); } catch(e) {}
+      if (speechRecognition) try { speechRecognition.abort(); } catch(e) {}
+      returnToStandby();
+    }
+
+    function returnToStandby() {
+      const callV = document.getElementById('callView');
+      const standby = document.getElementById('standbyView');
+      callV.style.display = 'none';
+      standby.style.display = 'flex';
+      standby.style.flexDirection = 'column';
+      current3DMode = 'standby';
+      resizeStandby3D();
+      requestAnimationFrame(() => {
+        resizeStandby3D();
+      });
+      refreshDeadlines();
+    }
+
+    // ================= 8. NEURAL VOICE AUDIO & LLAMA 3.2 =================
+    function playSpokenVoice(text, onFinished) {
+      audioIntensity = 0.85; // Boost 3D wave distortion for AI speaking
+
+      // 1. Instant zero-latency native device speech synthesis (0ms delay, no network download lag)
+      if ('speechSynthesis' in window && window.speechSynthesis) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.rate = 1.05;
+        utter.lang = 'en-US';
+        utter.pitch = 1.0;
+
+        utter.onstart = () => {
+          audioIntensity = 0.85;
+        };
+        utter.onend = () => {
+          audioIntensity = 0.15;
+          if (onFinished) onFinished();
+        };
+        utter.onerror = () => {
+          audioIntensity = 0.15;
+          fallbackRemoteTTS(text, onFinished);
+        };
+        window.speechSynthesis.speak(utter);
+        return;
+      }
+
+      // 2. Fallback to server Edge TTS stream
+      fallbackRemoteTTS(text, onFinished);
+    }
+
+    function fallbackRemoteTTS(text, onFinished) {
+      try {
+        speechAudio.pause();
+        speechAudio.src = `/api/voice/tts?text=${encodeURIComponent(text)}`;
+        speechAudio.volume = 1.0;
+
+        speechAudio.onended = () => {
+          audioIntensity = 0.15;
+          if (onFinished) onFinished();
+        };
+
+        speechAudio.play().catch(err => {
+          audioIntensity = 0.15;
+          if (onFinished) setTimeout(onFinished, 2000);
+        });
+      } catch(e) {
+        audioIntensity = 0.15;
+        if (onFinished) setTimeout(onFinished, 2000);
+      }
+    }
+
+    async function sendVoiceQueryToLlama(query) {
+      if (!query || !query.trim() || !isCallActive) return;
+
+      transcriptBox.innerText = `You: "${query}"\n\nAI is thinking (Ollama • Llama 3.2)...`;
+      audioIntensity = 0.4;
+      playProcessingPing();
+
+      try {
+        const res = await fetch('/api/voice/message', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer user_1'
+          },
+          body: JSON.stringify({
+            message: query,
+            persona: 'EMPATHETIC_MENTOR'
+          })
+        });
+
+        const data = await res.json();
+        const reply = data.assistant_reply || "I have updated your task schedule!";
+        transcriptBox.innerText = reply;
+
+        // Micro-audio completion feedback for mutations
+        if (data.tool_executed && ['create_task', 'complete_task', 'extend_deadline', 'change_priority', 'log_expense'].includes(data.tool_executed)) {
+          playCompletionTone();
+        }
+
+        // AI speaks back out loud through phone speaker with 3D audio reactions
+        playSpokenVoice(reply, () => {
+          if (isCallActive) startVoiceRecognition();
+        });
+
+        refreshDeadlines();
+
+      } catch(err) {
+        audioIntensity = 0.1;
+        transcriptBox.innerText = "Error communicating with local LLM. Check that Ollama is running.";
+      }
+    }
+
+    function sendSpokenInput() {
+      const input = document.getElementById('voiceTextInput');
+      const val = input.value.trim();
+      if (!val) return;
+      input.value = '';
+      sendVoiceQueryToLlama(val);
+    }
+
+    // Speech Recognition with Full-Duplex Interruptibility
+    function startVoiceRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) return;
+
+      if (!speechRecognition) {
+        speechRecognition = new SpeechRecognition();
+        speechRecognition.continuous = false;
+        speechRecognition.interimResults = false;
+        speechRecognition.lang = 'en-US';
+
+        speechRecognition.onstart = () => {
+          stopAISpeech(); // Instant full duplex interruptibility!
+          isListening = true;
+          audioIntensity = 0.65;
+          document.getElementById('micBtn').classList.add('active');
+          document.getElementById('voiceTextInput').placeholder = 'Listening... Speak now';
+        };
+
+        speechRecognition.onresult = (evt) => {
+          const spoken = evt.results[0][0].transcript;
+          isListening = false;
+          audioIntensity = 0.2;
+          document.getElementById('micBtn').classList.remove('active');
+          document.getElementById('voiceTextInput').placeholder = 'Speak or type to Llama 3.2...';
+          sendVoiceQueryToLlama(spoken);
+        };
+
+        speechRecognition.onerror = () => {
+          isListening = false;
+          audioIntensity = 0.1;
+          document.getElementById('micBtn').classList.remove('active');
+        };
+
+        speechRecognition.onend = () => {
+          isListening = false;
+          audioIntensity = 0.1;
+          document.getElementById('micBtn').classList.remove('active');
+        };
+      }
+
+      try { speechRecognition.start(); } catch(e) {}
+    }
+
+    function toggleMic(e) {
+      if (e) e.stopPropagation();
+      if (isListening) {
+        if (speechRecognition) speechRecognition.stop();
+      } else {
+        startVoiceRecognition();
+      }
+    }
+
+    // ================= 9. WEBSOCKET SIGNALING FROM BACKEND =================
+    function initCallSignaling() {
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const ws = new WebSocket(`${protocol}//${window.location.host}/api/voice/call-stream/student_mobile`);
+
+      ws.onmessage = (event) => {
+        try {
+          const msg = JSON.parse(event.data);
+          if (msg.event === 'INCOMING_CALL') {
+            triggerIncomingCall(msg);
+          }
+        } catch(e) {}
+      };
+
+      ws.onclose = () => {
+        setTimeout(initCallSignaling, 2500);
+      };
+    }
+
+    // Initialize everything on DOM load
+    window.addEventListener('DOMContentLoaded', () => {
+      initTheme();
+      initStandby3D();
+      initCall3D();
+      initCallSignaling();
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/static/sw.js').catch(err => console.log('SW registration:', err));
+      }
+    });
+  </script>
+</body>
+</html>

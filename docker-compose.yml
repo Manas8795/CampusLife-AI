@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  campuslife-backend:
+    build: .
+    container_name: campuslife_api
+    ports:
+      - "8000:8000"
+    environment:
+      - PROJECT_NAME=CampusLife AI
+      - DATABASE_URL=sqlite:///./campuslife.db
+      - SECRET_KEY=campuslife-production-secret-key
+    volumes:
+      - ./campuslife.db:/app/campuslife.db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
+      interval: 30s
+      timeout: 10s
+      retries: 3

@@ -1,0 +1,2 @@
+id,email,hashed_password,full_name,is_active,created_at
+1,alex@campuslife.ai,57d88c9477a5a2900510a52f02ecfb149cceff0e8755793c6ee01e89b70c6aa3,Alex Sharma,1,2026-10-06 05:58:25.655974

@@ -1,0 +1,18 @@
+{
+  "name": "campuslife-ai",
+  "version": "1.0.0",
+  "description": "CampusLife AI — frontend UI libraries (Three.js, GSAP, Chart.js, Lucide, Leaflet, animate.css)",
+  "private": true,
+  "scripts": {
+    "dev": "python -m uvicorn backend.app.main:app --host 0.0.0.0 --port 8000",
+    "test": "pytest"
+  },
+  "dependencies": {
+    "animate.css": "4.1.1",
+    "chart.js": "3.9.1",
+    "gsap": "3.12.5",
+    "leaflet": "1.9.4",
+    "lucide": "0.545.0",
+    "three": "0.128.0"
+  }
+}

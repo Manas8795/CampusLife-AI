@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="alabaster">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Health & Wellness — CampusLife AI</title>
+  
+  <!-- Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Unified Shared Shell Styling -->
+  <link rel="stylesheet" href="/static/shared-shell.css">
+  
+  <!-- 3D Engine & Animation: Three.js and GSAP -->
+  <script src="/static/vendor/three.min.js"></script>
+  <script src="/static/vendor/gsap.min.js"></script>
+
+  <style>
+    .stat-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700;
+    }
+    .badge-green { background: rgba(16, 185, 129, 0.15); color: #059669; border: 1px solid rgba(16, 185, 129, 0.35); }
+    .badge-red { background: rgba(239, 68, 68, 0.15); color: #dc2626; border: 1px solid rgba(239, 68, 68, 0.35); }
+
+    .log-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 13px 16px; background: var(--row-bg);
+      border: 1px solid var(--card-border); border-radius: 14px; margin-bottom: 9px;
+      transition: all 0.2s;
+    }
+    .log-item:hover { border-color: var(--card-border-glow); }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Quick-Open Tab when Sidebar is closed -->
+  <button class="floating-sidebar-trigger" onclick="toggleSidebar()" title="Open Navigation Bar" id="floatingSidebarTrigger">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+    <span>Open Menu</span>
+  </button>
+
+  <!-- ================= LEFT NAVIGATION SIDEBAR ================= -->
+  <aside class="sidebar" id="sidebar">
+    <div>
+      <!-- Brand Capsule with Close Button -->
+      <div class="brand-box">
+        <div class="brand-left">
+          <div class="brand-icon">🎓</div>
+          <div>
+            <div class="brand-title">CampusLife AI</div>
+            <div class="brand-sub">Student Life Intelligence</div>
+          </div>
+        </div>
+        <button class="sidebar-action-btn" onclick="toggleSidebar()" title="Close Navigation Bar (Ctrl+B)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Navigation Section: Core -->
+      <div class="nav-sec-label">Workspace</div>
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a href="/">
+            <span class="nav-icon">📊</span>
+            <span>Life Analytics Hub</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/call">
+            <span class="nav-icon">📱</span>
+            <span>Phone Standby</span>
+            <span class="nav-badge-pill">LIVE CALL</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/voice">
+            <span class="nav-icon">🎙️</span>
+            <span>Voice Co-Pilot</span>
+          </a>
+        </li>
+      </ul>
+
+      <!-- Navigation Section: Academic & Life Modules -->
+      <div class="nav-sec-label" style="margin-top: 14px;">Modules</div>
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a href="/study">
+            <span class="nav-icon">📚</span>
+            <span>Academics & Tasks</span>
+          </a>
+        </li>
+        <li class="nav-item active">
+          <a href="/health">
+            <span class="nav-icon">🧘</span>
+            <span>Health & Vitals</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/expenses">
+            <span class="nav-icon">💳</span>
+            <span>Budget & Runway</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/travel">
+            <span class="nav-icon">✈️</span>
+            <span>Trip Planner</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/intelligence">
+            <span class="nav-icon">🧠</span>
+            <span>Student Intelligence</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/infra">
+            <span class="nav-icon">⚙️</span>
+            <span>AI/ML Infra</span>
+          </a>
+        </li>
+      </ul>
+
+      <!-- 5-Theme Switcher -->
+      <!-- Multi-Theme Switcher (Light & Dark Suites) -->
+      <div class="theme-picker-card">
+        <div class="theme-picker-head">
+          <span>Active Theme</span>
+          <span id="themeLabel" style="color: var(--primary-light); font-weight: 700;">Alabaster</span>
+        </div>
+        <div class="theme-picker-sublabel">Light Themes</div>
+        <div class="theme-swatch-row" style="margin-bottom: 8px;">
+          <div class="swatch-btn active" style="background: linear-gradient(135deg, #ffffff, #2563eb);" title="Alabaster Slate (Light)" onclick="switchTheme('alabaster', this, 'Alabaster')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #e0f2fe, #0284c7);" title="Nordic Frost (Light)" onclick="switchTheme('nordic', this, 'Nordic Frost')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #ffe4e6, #e11d48);" title="Sakura Blossom (Light)" onclick="switchTheme('sakura', this, 'Sakura')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #dcfce7, #059669);" title="Matcha Sage (Light)" onclick="switchTheme('matcha', this, 'Matcha')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #fef3c7, #d97706);" title="Caramel Latte (Light)" onclick="switchTheme('latte', this, 'Latte')"></div>
+        </div>
+        <div class="theme-picker-sublabel">Dark Themes</div>
+        <div class="theme-swatch-row dark-row">
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #070a14, #6366f1);" title="Midnight Obsidian (Dark)" onclick="switchTheme('midnight', this, 'Midnight')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #090314, #ec4899);" title="Cyberpunk Neon (Dark)" onclick="switchTheme('cyberpunk', this, 'Cyberpunk')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #030d0a, #10b981);" title="Emerald Matrix (Dark)" onclick="switchTheme('emerald', this, 'Emerald')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #0c0806, #f59e0b);" title="Solar Sunset (Dark)" onclick="switchTheme('solar', this, 'Solar')"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sentinel System Telemetry Footer -->
+    <div class="system-footer">
+      <div class="system-avatar">⚡</div>
+      <div>
+        <div class="system-name">Autonomous Sentinel</div>
+        <div class="system-status">
+          <span style="font-size: 8px;">●</span> Online & Guarding
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN WORKSPACE CANVAS ================= -->
+  <main class="workspace-main">
+    
+    <!-- Top Command Header Bar -->
+    <div class="top-command-bar">
+      <div class="breadcrumbs-wrap">
+        <button class="nav-toggle-icon-btn" onclick="toggleSidebar()" title="Toggle Navigation Bar (Ctrl+B)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="9" y1="3" x2="9" y2="21"></line>
+          </svg>
+        </button>
+        <div class="breadcrumbs">
+          <span>Workspace</span>
+          <span>/</span>
+          <span class="current">Health & Circadian Vitality</span>
+        </div>
+      </div>
+
+      <div class="header-btns">
+        <button class="ui-btn btn-call" onclick="triggerImmediateCall()">
+          <span>📞</span>
+          <span>Ring Phone Now</span>
+        </button>
+        <a href="/call" class="ui-btn btn-primary">
+          <span>📱</span>
+          <span>Open Phone Standby</span>
+        </a>
+        <a href="/voice" class="ui-btn btn-glass">
+          <span>🎙️</span>
+          <span>Voice Co-Pilot</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Workspace Canvas Content -->
+    <div class="workspace-canvas">
+      
+      <!-- Welcome Header Banner -->
+      <div class="welcome-header">
+        <div>
+          <h1 class="welcome-title">Health & Wellness</h1>
+          <p class="welcome-desc">Sleep cycle monitoring, mood journaling, 7-day rolling baseline tracking, and stress ML inference.</p>
+        </div>
+        <div class="sentinel-pill">
+          <span>●</span> ML Stress Predictor Active
+        </div>
+      </div>
+
+      <!-- 3D Interactive Circadian Vitality Bio-Orb -->
+      <div class="canvas-3d-card">
+        <div class="canvas-3d-overlay">
+          <div>
+            <div class="canvas-3d-title"><span>🧘</span> 3D Circadian Vitality & Stress Bio-Orb</div>
+            <div class="canvas-3d-sub">Real-time biomorphic orb mapping sleep equilibrium, pulse rhythm & stress valence in WebGL</div>
+          </div>
+          <div class="canvas-badge-floating">
+            <span class="pulse-dot"></span> Live Biometrics Sync
+          </div>
+        </div>
+        <div class="canvas-3d-container" id="vitalityContainer">
+          <canvas id="vitalityOrbCanvas" style="width: 100%; height: 100%; display: block;"></canvas>
+        </div>
+        <div class="canvas-3d-hint">Mouse orbit • Color reacts to live stress level</div>
+      </div>
+
+      <!-- Health Metrics Grid -->
+      <div class="grid">
+        <div class="col-4">
+          <div class="card" style="border-left: 4px solid #ef4444;">
+            <div style="font-size: 12.5px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Predicted Stress Score</div>
+            <div style="display: flex; align-items: baseline; gap: 10px; margin-top: 8px;">
+              <div id="stressScoreVal" style="font-size: 38px; font-weight: 800; color: #dc2626;">--</div>
+              <div style="font-size: 13.5px; color: var(--text-muted);">/ 100 Risk Index</div>
+            </div>
+            <p id="stressCategory" style="font-size: 13px; color: #dc2626; margin-top: 5px; font-weight: 600;">Evaluating latest vitals...</p>
+          </div>
+        </div>
+
+        <div class="col-4">
+          <div class="card" style="border-left: 4px solid #0284c7;">
+            <div style="font-size: 12.5px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Avg Sleep (7-Day Baseline)</div>
+            <div style="display: flex; align-items: baseline; gap: 10px; margin-top: 8px;">
+              <div id="avgSleepVal" style="font-size: 38px; font-weight: 800; color: #0284c7;">--</div>
+              <div style="font-size: 13.5px; color: var(--text-muted);">hours / night</div>
+            </div>
+            <p id="sleepAlert" style="font-size: 13px; color: var(--text-muted); margin-top: 5px;">Baseline threshold: 7.0 hrs</p>
+          </div>
+        </div>
+
+        <div class="col-4">
+          <div class="card" style="border-left: 4px solid #10b981;">
+            <div style="font-size: 12.5px; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">Avg Energy Level</div>
+            <div style="display: flex; align-items: baseline; gap: 10px; margin-top: 8px;">
+              <div id="avgEnergyVal" style="font-size: 38px; font-weight: 800; color: #059669;">--</div>
+              <div style="font-size: 13.5px; color: var(--text-muted);">/ 10 Scale</div>
+            </div>
+            <p style="font-size: 13px; color: #059669; margin-top: 5px;">Self-reported vitality</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <!-- 7-Day History & Suggestions -->
+        <div class="col-8">
+          <div class="card" style="margin-bottom: 22px;">
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">Wellness & Vitals History (Recent Entries)</h3>
+            <div id="logsContainer">Loading wellness logs...</div>
+          </div>
+
+          <!-- AI Wellness & Mindfulness Advice -->
+          <div class="card">
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 14px;">🧘 AI Wellness & Mindfulness Coach</h3>
+            <div id="aiSuggestions" style="padding: 16px; background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.25); border-radius: 14px; font-size: 13.5px; line-height: 1.7;">
+              Generating personalized recovery guidance...
+            </div>
+          </div>
+        </div>
+
+        <!-- Log New Wellness Entry -->
+        <div class="col-4">
+          <div class="card">
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 16px;">+ Log Today's Vitals</h3>
+            <form onsubmit="handleLogWellness(event)">
+              <label style="font-size: 12.5px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; display: block;">Date</label>
+              <input type="date" id="logDate" class="input-control" required>
+
+              <label style="font-size: 12.5px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; display: block;">Sleep Hours</label>
+              <input type="number" step="0.5" min="0" max="24" id="logSleep" placeholder="e.g. 5.5" class="input-control" required>
+
+              <label style="font-size: 12.5px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; display: block;">Mood (1 to 10)</label>
+              <input type="number" min="1" max="10" id="logMood" placeholder="e.g. 6" class="input-control" required>
+
+              <label style="font-size: 12.5px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; display: block;">Energy Level (1 to 10)</label>
+              <input type="number" min="1" max="10" id="logEnergy" placeholder="e.g. 4" class="input-control" required>
+
+              <label style="font-size: 12.5px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; display: block;">Study Hours Yesterday</label>
+              <input type="number" step="0.5" min="0" max="24" id="logStudy" placeholder="e.g. 7.5" class="input-control" required>
+
+              <label style="font-size: 12.5px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; display: block;">Notes / Journal</label>
+              <textarea id="logNotes" placeholder="Daily reflections or study notes..." class="input-control" style="height: 70px; resize: none;"></textarea>
+
+              <button type="submit" class="ui-btn btn-primary" style="width: 100%; justify-content: center;">Save & Predict Stress</button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Unified Shell Controller -->
+  <script src="/static/shared-shell.js"></script>
+
+  <script>
+    const API_HEADERS = {
+      'Authorization': 'Bearer user_1',
+      'Content-Type': 'application/json'
+    };
+
+    document.getElementById('logDate').value = new Date().toISOString().split('T')[0];
+
+    async function loadHealthData() {
+      try {
+        const [dashRes, logsRes] = await Promise.all([
+          fetch('/api/health/dashboard', { headers: API_HEADERS }),
+          fetch('/api/health/logs?limit=7', { headers: API_HEADERS })
+        ]);
+
+        const dash = await dashRes.json();
+        const logs = await logsRes.json();
+
+        // Stress card
+        const stress = dash.stress_prediction;
+        document.getElementById('stressScoreVal').innerText = stress.stress_score;
+        document.getElementById('stressCategory').innerText = `Status: ${stress.category} (${stress.recommendation})`;
+        updateOrbColorByStress(stress.category);
+
+        // Baselines
+        const base = dash.baseline_7d;
+        document.getElementById('avgSleepVal').innerText = (base.avg_sleep_hours || 0).toFixed(1);
+        document.getElementById('avgEnergyVal').innerText = (base.avg_energy || 0).toFixed(1);
+
+        if (base.avg_sleep_hours < 6.0) {
+          document.getElementById('sleepAlert').innerHTML = '<span style="color: #dc2626;">⚠️ Sleep deficit detected (< 6h)</span>';
+        }
+
+        // Suggestions
+        if (dash.suggestions && dash.suggestions.length > 0) {
+          document.getElementById('aiSuggestions').innerHTML = dash.suggestions.map(s => `
+            <div style="margin-bottom: 8px;">
+              <strong>• ${s.category.toUpperCase()}:</strong> ${s.action}
+              <span style="font-size: 12px; color: var(--text-muted); margin-left: 6px;">(${s.reason})</span>
+            </div>
+          `).join('');
+        }
+
+        // Render logs
+        const container = document.getElementById('logsContainer');
+        if (logs.length === 0) {
+          container.innerHTML = '<div style="color: var(--text-muted); font-size: 13px;">No wellness entries recorded yet.</div>';
+          return;
+        }
+
+        container.innerHTML = logs.map(l => `
+          <div class="log-item">
+            <div>
+              <div style="font-weight: 700; font-size: 14px;">${l.record_date || l.date}</div>
+              <div style="font-size: 12.5px; color: var(--text-muted); margin-top: 3px;">
+                💤 ${l.sleep_hours} hrs • Mood: ${l.mood || l.mood_score || 3}/5 • Energy: ${l.energy_level || 3}/5 • Study: ${l.study_hours || 0} hrs
+              </div>
+              ${l.notes ? `<div style="font-size: 12px; color: var(--primary); margin-top: 4px;">"${l.notes}"</div>` : ''}
+            </div>
+            <div>
+              <span class="stat-badge ${l.sleep_hours < 6 ? 'badge-red' : 'badge-green'}">
+                ${l.sleep_hours < 6 ? 'Deficit' : 'Optimal'}
+              </span>
+            </div>
+          </div>
+        `).join('');
+
+      } catch (err) {
+        console.error('Error fetching health data:', err);
+      }
+    }
+
+    async function handleLogWellness(e) {
+      e.preventDefault();
+      const payload = {
+        record_date: document.getElementById('logDate').value,
+        sleep_hours: parseFloat(document.getElementById('logSleep').value),
+        mood: parseInt(document.getElementById('logMood').value),
+        energy_level: parseInt(document.getElementById('logEnergy').value),
+        study_hours: parseFloat(document.getElementById('logStudy').value),
+        notes: document.getElementById('logNotes').value
+      };
+
+      try {
+        const res = await fetch('/api/health/logs', {
+          method: 'POST',
+          headers: API_HEADERS,
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          showToast('Vitals logged! Stress score updated', '🧘');
+          loadHealthData();
+        } else {
+          showToast('Failed to log wellness data', '✕');
+        }
+      } catch (err) {
+        showToast('Network error while logging vitals', '✕');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadHealthData();
+      initVitalityOrb();
+    });
+
+    // ================= 3D VITALITY & STRESS BIO-ORB =================
+    let orbScene, orbCamera, orbRenderer, bioOrbMesh, wireCageMesh, ring1, ring2, ring3;
+    let orbMat, wireMat, ringMat;
+    let isDraggingOrb = false, prevOrbMouseX = 0, prevOrbMouseY = 0;
+    let orbClock = 0;
+
+    function updateOrbColorByStress(stressLevel) {
+      if (!orbMat) return;
+      let targetColor = 0x10b981; // Low / Balanced
+      if (stressLevel === 'HIGH') targetColor = 0xf43f5e;
+      else if (stressLevel === 'MEDIUM') targetColor = 0xf59e0b;
+
+      if (window.gsap) {
+        gsap.to(orbMat.color, { r: new THREE.Color(targetColor).r, g: new THREE.Color(targetColor).g, b: new THREE.Color(targetColor).b, duration: 0.8 });
+        gsap.to(wireMat.color, { r: new THREE.Color(targetColor).r, g: new THREE.Color(targetColor).g, b: new THREE.Color(targetColor).b, duration: 0.8 });
+      } else {
+        orbMat.color.set(targetColor);
+        wireMat.color.set(targetColor);
+      }
+    }
+
+    function initVitalityOrb() {
+      const canvas = document.getElementById('vitalityOrbCanvas');
+      const container = document.getElementById('vitalityContainer');
+      if (!canvas || !container || !window.THREE) return;
+
+      const width = container.clientWidth || 800;
+      const height = container.clientHeight || 280;
+
+      orbScene = new THREE.Scene();
+      orbCamera = new THREE.PerspectiveCamera(45, width / height, 1, 1000);
+      orbCamera.position.z = 210;
+
+      orbRenderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+      orbRenderer.setSize(width, height);
+      orbRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      // Lighting
+      const amb = new THREE.AmbientLight(0xffffff, 1.1);
+      orbScene.add(amb);
+
+      const pLight = new THREE.PointLight(0x38bdf8, 2.5, 500);
+      pLight.position.set(60, 80, 100);
+      orbScene.add(pLight);
+
+      const pLight2 = new THREE.PointLight(0xec4899, 1.8, 500);
+      pLight2.position.set(-60, -80, 80);
+      orbScene.add(pLight2);
+
+      const orbGroup = new THREE.Group();
+      orbScene.add(orbGroup);
+
+      // Core Organic Bio-Orb
+      orbMat = new THREE.MeshStandardMaterial({
+        color: 0x10b981,
+        roughness: 0.2,
+        metalness: 0.8,
+        emissive: 0x064e3b,
+        emissiveIntensity: 0.35,
+        wireframe: false
+      });
+      const orbGeo = new THREE.IcosahedronGeometry(44, 3);
+      bioOrbMesh = new THREE.Mesh(orbGeo, orbMat);
+      orbGroup.add(bioOrbMesh);
+
+      // Wireframe Outer Protective Shell
+      wireMat = new THREE.MeshBasicMaterial({
+        color: 0x34d399,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.35
+      });
+      const wireGeo = new THREE.IcosahedronGeometry(53, 2);
+      wireCageMesh = new THREE.Mesh(wireGeo, wireMat);
+      orbGroup.add(wireCageMesh);
+
+      // 3 Circadian Energy Orbit Rings
+      ringMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.4 });
+      ring1 = new THREE.Mesh(new THREE.TorusGeometry(68, 1.1, 16, 90), ringMat);
+      ring1.rotation.x = Math.PI / 2.8;
+      orbGroup.add(ring1);
+
+      ring2 = new THREE.Mesh(new THREE.TorusGeometry(82, 0.9, 16, 90), new THREE.MeshBasicMaterial({ color: 0x818cf8, transparent: true, opacity: 0.32 }));
+      ring2.rotation.y = Math.PI / 3.2;
+      orbGroup.add(ring2);
+
+      ring3 = new THREE.Mesh(new THREE.TorusGeometry(96, 0.7, 16, 90), new THREE.MeshBasicMaterial({ color: 0xf59e0b, transparent: true, opacity: 0.25 }));
+      ring3.rotation.z = Math.PI / 4.2;
+      orbGroup.add(ring3);
+
+      // Mouse drag controls
+      container.addEventListener('mousedown', (e) => {
+        isDraggingOrb = true;
+        prevOrbMouseX = e.clientX;
+        prevOrbMouseY = e.clientY;
+      });
+      window.addEventListener('mouseup', () => { isDraggingOrb = false; });
+      window.addEventListener('mousemove', (e) => {
+        if (!isDraggingOrb) return;
+        const dx = e.clientX - prevOrbMouseX;
+        const dy = e.clientY - prevOrbMouseY;
+        orbGroup.rotation.y += dx * 0.008;
+        orbGroup.rotation.x += dy * 0.008;
+        prevOrbMouseX = e.clientX;
+        prevOrbMouseY = e.clientY;
+      });
+
+      window.addEventListener('resize', () => {
+        const w = container.clientWidth || 800;
+        const h = container.clientHeight || 280;
+        orbCamera.aspect = w / h;
+        orbCamera.updateProjectionMatrix();
+        orbRenderer.setSize(w, h);
+      });
+
+      function animateOrb() {
+        requestAnimationFrame(animateOrb);
+        orbClock += 0.016;
+
+        if (!isDraggingOrb) {
+          orbGroup.rotation.y += 0.0035;
+        }
+
+        // Biological breathing pulse
+        const breathScale = 1.0 + Math.sin(orbClock * 2.2) * 0.06;
+        bioOrbMesh.scale.set(breathScale, breathScale, breathScale);
+
+        wireCageMesh.rotation.y -= 0.005;
+        wireCageMesh.rotation.z += 0.003;
+
+        ring1.rotation.z += 0.006;
+        ring2.rotation.x += 0.004;
+        ring3.rotation.y += 0.005;
+
+        orbRenderer.render(orbScene, orbCamera);
+      }
+      animateOrb();
+    }
+  </script>
+</body>
+</html>

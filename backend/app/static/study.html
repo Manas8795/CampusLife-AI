@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="alabaster">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Academics & Study Planner — CampusLife AI</title>
+  
+  <!-- Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Unified Shared Shell Styling -->
+  <link rel="stylesheet" href="/static/shared-shell.css">
+  
+  <!-- Animation Engine: GSAP -->
+  <script src="/static/vendor/gsap.min.js"></script>
+
+  <style>
+    .task-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px;
+      background: var(--row-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      margin-bottom: 11px;
+      transition: all 0.2s ease;
+    }
+    .task-item:hover {
+      border-color: var(--card-border-glow);
+      transform: translateY(-1px);
+    }
+    .task-check {
+      width: 22px;
+      height: 22px;
+      border-radius: 7px;
+      border: 2px solid var(--primary-light);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 800;
+      transition: all 0.2s;
+    }
+    .task-item.completed .task-check {
+      background: #10b981;
+      border-color: #10b981;
+      color: #fff;
+    }
+    .task-item.completed .task-title {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+    .badge-high {
+      background: rgba(239, 68, 68, 0.15);
+      color: #dc2626;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      font-size: 11.5px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+    }
+    .badge-med {
+      background: rgba(217, 119, 6, 0.15);
+      color: #d97706;
+      border: 1px solid rgba(217, 119, 6, 0.35);
+      font-size: 11.5px;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 700;
+    }
+
+    /* ================= TAB BAR ================= */
+    .tab-bar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 20px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 6px;
+      width: fit-content;
+    }
+    .tab-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: 'Outfit', sans-serif;
+      font-size: 14.5px;
+      font-weight: 700;
+      padding: 9px 22px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .tab-btn:hover { color: var(--text); background: var(--row-bg); }
+    .tab-btn.active {
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: var(--card-shadow);
+    }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ================= CALENDAR OVERLAY (3D) ================= */
+    .cal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(2, 6, 23, 0.55);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 24px;
+      perspective: 1400px;
+    }
+    .cal-overlay.open { display: flex; }
+    .cal-panel {
+      width: min(880px, 100%);
+      max-height: 90vh;
+      overflow-y: auto;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 18px;
+      box-shadow: 0 26px 60px -14px rgba(2, 6, 23, 0.55), var(--card-shadow);
+      padding: 22px;
+    }
+    .cal-overlay.open .cal-panel { animation: calTiltIn 0.4s cubic-bezier(0.2, 0.9, 0.25, 1.05); }
+    @keyframes calTiltIn {
+      from { transform: rotateX(16deg) translateY(30px) scale(0.95); opacity: 0; }
+      60% { opacity: 1; }
+      to { transform: rotateX(0deg) translateY(0) scale(1); opacity: 1; }
+    }
+    .cal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 8px;
+    }
+    .cal-title {
+      font-size: 19px;
+      font-weight: 800;
+      text-shadow: 0 2px 3px rgba(2, 6, 23, 0.18);
+    }
+    .cal-nav { display: flex; gap: 8px; }
+    .cal-nav .ui-btn {
+      padding: 7px 13px;
+      font-size: 13px;
+      box-shadow: 0 3px 0 rgba(2, 6, 23, 0.2);
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+    .cal-nav .ui-btn:hover { transform: translateY(-1px); }
+    .cal-nav .ui-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 rgba(2, 6, 23, 0.2); }
+    .cal-month-label {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--primary-light);
+      margin: 6px 0 12px;
+      letter-spacing: 0.02em;
+    }
+    .cal-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+    }
+    .cal-dow {
+      font-size: 11px;
+      font-weight: 800;
+      color: var(--text-muted);
+      text-align: center;
+      padding: 4px 0;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+    }
+    .cal-day {
+      min-height: 78px;
+      background: var(--row-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 6px;
+      cursor: pointer;
+      overflow: hidden;
+      box-shadow: 0 3px 0 var(--card-border), 0 9px 16px -8px rgba(2, 6, 23, 0.35);
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+    }
+    .cal-day:hover {
+      border-color: var(--primary-light);
+      transform: translateY(-3px);
+      box-shadow: 0 6px 0 var(--card-border), 0 16px 24px -10px rgba(2, 6, 23, 0.42);
+    }
+    .cal-day:active { transform: translateY(1px); box-shadow: 0 2px 0 var(--card-border); }
+    .cal-day.other { opacity: 0.38; }
+    .cal-day.today {
+      border-color: var(--primary);
+      box-shadow: 0 3px 0 var(--primary), 0 0 0 2px var(--primary), 0 14px 22px -10px rgba(2, 6, 23, 0.45);
+    }
+    .cal-day.selected {
+      background: var(--badge-bg);
+      border-color: var(--primary-light);
+      transform: translateY(-2px);
+      box-shadow: 0 5px 0 var(--primary-light), 0 14px 22px -10px rgba(2, 6, 23, 0.45);
+    }
+    .cal-day-num { font-size: 12.5px; font-weight: 700; }
+    .cal-day.today .cal-day-num { color: var(--primary-light); }
+    .cal-dots { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 6px; }
+    .cal-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      background-image: radial-gradient(circle at 32% 30%, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0) 48%);
+      box-shadow: 0 1px 2px rgba(2, 6, 23, 0.45);
+    }
+    .cal-agenda {
+      margin-top: 16px;
+      border-top: 1px dashed var(--card-border);
+      padding-top: 14px;
+    }
+    .cal-agenda-title { font-size: 14.5px; font-weight: 800; margin-bottom: 10px; }
+    .agenda-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--row-bg);
+      border: 1px solid var(--card-border);
+      border-left: 3px solid var(--primary);
+      border-radius: 12px;
+      padding: 11px 13px;
+      margin-bottom: 8px;
+      box-shadow: 0 4px 10px -7px rgba(2, 6, 23, 0.4);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .agenda-item:hover {
+      border-color: var(--card-border-glow);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 14px -8px rgba(2, 6, 23, 0.45);
+    }
+    .cal-open-btn {
+      box-shadow: 0 4px 12px -4px rgba(2, 6, 23, 0.35);
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+    .cal-open-btn:hover { transform: translateY(-2px); }
+    .cal-open-btn:active { transform: translateY(1px); }
+
+    /* ================= TASK EDIT ================= */
+    .task-edit-btn {
+      background: none;
+      border: none;
+      color: var(--primary-light);
+      font-size: 15px;
+      cursor: pointer;
+      padding: 4px;
+      transition: transform 0.12s ease;
+    }
+    .task-edit-btn:hover { transform: scale(1.18); }
+    .field-hint { font-size: 11.5px; color: var(--text-muted); margin: -6px 0 12px; }
+
+    .preset-chip {
+      background: rgba(37, 99, 235, 0.08);
+      border: 1px solid rgba(37, 99, 235, 0.25);
+      color: var(--primary);
+      border-radius: 99px;
+      padding: 3px 9px;
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .preset-chip:hover {
+      background: var(--primary);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+    .plan-card {
+      background: var(--row-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+      transition: all 0.2s ease;
+    }
+    .plan-card:hover {
+      border-color: var(--card-border-glow);
+      transform: translateY(-1px);
+    }
+
+    @media (max-width: 640px) {
+      .cal-day { min-height: 52px; padding: 4px; box-shadow: 0 2px 0 var(--card-border); }
+      .cal-panel { padding: 14px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Quick-Open Tab when Sidebar is closed -->
+  <button class="floating-sidebar-trigger" onclick="toggleSidebar()" title="Open Navigation Bar" id="floatingSidebarTrigger">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+    <span>Open Menu</span>
+  </button>
+
+  <!-- ================= LEFT NAVIGATION SIDEBAR ================= -->
+  <aside class="sidebar" id="sidebar">
+    <div>
+      <!-- Brand Capsule with Close Button -->
+      <div class="brand-box">
+        <div class="brand-left">
+          <div class="brand-icon">🎓</div>
+          <div>
+            <div class="brand-title">CampusLife AI</div>
+            <div class="brand-sub">Student Life Intelligence</div>
+          </div>
+        </div>
+        <button class="sidebar-action-btn" onclick="toggleSidebar()" title="Close Navigation Bar (Ctrl+B)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Navigation Section: Core -->
+      <div class="nav-sec-label">Workspace</div>
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a href="/">
+            <span class="nav-icon">📊</span>
+            <span>Life Analytics Hub</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/call">
+            <span class="nav-icon">📱</span>
+            <span>Phone Standby</span>
+            <span class="nav-badge-pill">LIVE CALL</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/voice">
+            <span class="nav-icon">🎙️</span>
+            <span>Voice Co-Pilot</span>
+          </a>
+        </li>
+      </ul>
+
+      <!-- Navigation Section: Academic & Life Modules -->
+      <div class="nav-sec-label" style="margin-top: 14px;">Modules</div>
+      <ul class="nav-list">
+        <li class="nav-item active">
+          <a href="/study">
+            <span class="nav-icon">📚</span>
+            <span>Academics & Tasks</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/health">
+            <span class="nav-icon">🧘</span>
+            <span>Health & Vitals</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/expenses">
+            <span class="nav-icon">💳</span>
+            <span>Budget & Runway</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/travel">
+            <span class="nav-icon">✈️</span>
+            <span>Trip Planner</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/intelligence">
+            <span class="nav-icon">🧠</span>
+            <span>Student Intelligence</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/infra">
+            <span class="nav-icon">⚙️</span>
+            <span>AI/ML Infra</span>
+          </a>
+        </li>
+      </ul>
+
+      <!-- 5-Theme Switcher -->
+      <!-- Multi-Theme Switcher (Light & Dark Suites) -->
+      <div class="theme-picker-card">
+        <div class="theme-picker-head">
+          <span>Active Theme</span>
+          <span id="themeLabel" style="color: var(--primary-light); font-weight: 700;">Alabaster</span>
+        </div>
+        <div class="theme-picker-sublabel">Light Themes</div>
+        <div class="theme-swatch-row" style="margin-bottom: 8px;">
+          <div class="swatch-btn active" style="background: linear-gradient(135deg, #ffffff, #2563eb);" title="Alabaster Slate (Light)" onclick="switchTheme('alabaster', this, 'Alabaster')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #e0f2fe, #0284c7);" title="Nordic Frost (Light)" onclick="switchTheme('nordic', this, 'Nordic Frost')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #ffe4e6, #e11d48);" title="Sakura Blossom (Light)" onclick="switchTheme('sakura', this, 'Sakura')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #dcfce7, #059669);" title="Matcha Sage (Light)" onclick="switchTheme('matcha', this, 'Matcha')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #fef3c7, #d97706);" title="Caramel Latte (Light)" onclick="switchTheme('latte', this, 'Latte')"></div>
+        </div>
+        <div class="theme-picker-sublabel">Dark Themes</div>
+        <div class="theme-swatch-row dark-row">
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #070a14, #6366f1);" title="Midnight Obsidian (Dark)" onclick="switchTheme('midnight', this, 'Midnight')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #090314, #ec4899);" title="Cyberpunk Neon (Dark)" onclick="switchTheme('cyberpunk', this, 'Cyberpunk')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #030d0a, #10b981);" title="Emerald Matrix (Dark)" onclick="switchTheme('emerald', this, 'Emerald')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #0c0806, #f59e0b);" title="Solar Sunset (Dark)" onclick="switchTheme('solar', this, 'Solar')"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sentinel System Telemetry Footer -->
+    <div class="system-footer">
+      <div class="system-avatar">⚡</div>
+      <div>
+        <div class="system-name">Autonomous Sentinel</div>
+        <div class="system-status">
+          <span style="font-size: 8px;">●</span> Online & Guarding
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN WORKSPACE CANVAS ================= -->
+  <main class="workspace-main">
+    
+    <!-- Top Command Header Bar -->
+    <div class="top-command-bar">
+      <div class="breadcrumbs-wrap">
+        <button class="nav-toggle-icon-btn" onclick="toggleSidebar()" title="Toggle Navigation Bar (Ctrl+B)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="9" y1="3" x2="9" y2="21"></line>
+          </svg>
+        </button>
+        <div class="breadcrumbs">
+          <span>Workspace</span>
+          <span>/</span>
+          <span class="current">Academics & Task Lifecycle</span>
+        </div>
+      </div>
+
+      <div class="header-btns">
+        <button class="ui-btn btn-call" onclick="triggerImmediateCall()">
+          <span>📞</span>
+          <span>Ring Phone Now</span>
+        </button>
+        <a href="/call" class="ui-btn btn-primary">
+          <span>📱</span>
+          <span>Open Phone Standby</span>
+        </a>
+        <a href="/voice" class="ui-btn btn-glass">
+          <span>🎙️</span>
+          <span>Voice Co-Pilot</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Workspace Canvas Content -->
+    <div class="workspace-canvas">
+      
+      <!-- Welcome Header Banner -->
+      <div class="welcome-header">
+        <div>
+          <h1 class="welcome-title">To-Do & Study Planner</h1>
+          <p class="welcome-desc">Academic task lifecycle, syllabus-based study plans, and procrastination & delay-risk prediction.</p>
+        </div>
+        <div class="sentinel-pill">
+          <span>●</span> Study Sentinel Active
+        </div>
+      </div>
+
+      <!-- Tabs: Tasks | Academic & Study Plans | Deadlines Calendar -->
+      <div class="tab-bar">
+        <button class="tab-btn active" data-tab="tasks" onclick="switchTab('tasks')">✅ Tasks</button>
+        <button class="tab-btn" data-tab="academic" onclick="switchTab('academic')">🎓 Academic & Study Plans</button>
+        <button class="tab-btn" data-tab="calendar" onclick="switchTab('calendar')">📅 Deadlines Calendar</button>
+      </div>
+
+      <!-- ================= TASKS TAB ================= -->
+      <div class="tab-panel active" id="panel-tasks">
+      <div style="display: flex; justify-content: flex-end; margin-bottom: 14px;">
+        <button class="ui-btn btn-glass cal-open-btn" onclick="switchTab('calendar')" title="Open deadlines calendar view">📅 View Calendar & Deadlines</button>
+      </div>
+
+      <!-- Main Grid -->
+      <div class="grid">
+        <!-- Task List -->
+        <div class="col-8">
+          <div class="card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+              <h3 style="font-size: 19px; font-weight: 700;">Academic Task Management</h3>
+              <span id="riskBadge" class="badge-high">Productivity Risk: Evaluating...</span>
+            </div>
+            <div id="taskList">Loading tasks...</div>
+          </div>
+        </div>
+
+        <!-- Right column: Add Task & Productivity Predictor -->
+        <div class="col-4">
+          <!-- Add Task -->
+          <div class="card" style="margin-bottom: 22px;">
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 14px;">+ Create New Task</h3>
+            <form onsubmit="handleCreateTask(event)">
+              <input type="text" id="taskTitle" placeholder="Task Title (e.g. Operating Systems Lab)" class="input-control" required>
+              <input type="text" id="taskSubject" placeholder="Subject (e.g. OS)" class="input-control">
+              
+              <!-- Deadline Picker with Presets -->
+              <div style="margin-bottom: 12px;">
+                <label style="font-size: 12.5px; font-weight: 700; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px;">
+                  <span>⏰ Task Deadline</span>
+                  <span id="taskDeadlinePreview" style="color: var(--primary); font-weight: 600; font-size: 11.5px;">Optional</span>
+                </label>
+                <input type="datetime-local" id="taskDueDate" class="input-control" style="margin-bottom: 6px;" title="Deadline date & time">
+                <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px;">
+                  <button type="button" class="preset-chip" onclick="setDeadlinePreset('taskDueDate', 'today')">Today 11:59 PM</button>
+                  <button type="button" class="preset-chip" onclick="setDeadlinePreset('taskDueDate', 'tomorrow')">Tomorrow</button>
+                  <button type="button" class="preset-chip" onclick="setDeadlinePreset('taskDueDate', '3days')">+3 Days</button>
+                  <button type="button" class="preset-chip" onclick="setDeadlinePreset('taskDueDate', '1week')">+1 Week</button>
+                  <button type="button" class="preset-chip" onclick="setDeadlinePreset('taskDueDate', 'clear')">Clear</button>
+                </div>
+                <div class="field-hint">Exact timestamp for autonomous phone alerts & calendar mapping.</div>
+              </div>
+
+              <select id="taskPriority" class="input-control" style="cursor: pointer;">
+                <option value="HIGH">High Priority</option>
+                <option value="MEDIUM" selected>Medium Priority</option>
+                <option value="LOW">Low Priority</option>
+              </select>
+              <button type="submit" class="ui-btn btn-primary" style="width: 100%; justify-content: center;">Create Task</button>
+            </form>
+          </div>
+
+        </div>
+      </div>
+      </div>
+
+      <!-- ================= ACADEMIC TAB ================= -->
+      <div class="tab-panel" id="panel-academic">
+      <div class="grid">
+        <!-- AI Study Plan Generator with Exact Deadline -->
+        <div class="col-7">
+          <div class="card" style="margin-bottom: 22px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <h3 style="font-size: 19px; font-weight: 700;">✨ AI Study Plan Generator with Exam Deadline</h3>
+              <span class="badge badge-blue">AI Autonomous Pacer</span>
+            </div>
+            <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 16px;">
+              Specify your course, target exam deadline date/time, and syllabus topics. CampusLife AI automatically generates structured, day-by-day study sessions with paced deadlines mapped straight to your calendar.
+            </p>
+            <form onsubmit="handleGeneratePlan(event)">
+              <div style="margin-bottom: 12px;">
+                <label style="font-size: 12.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; display: block;">Course / Subject Name</label>
+                <input type="text" id="planSubject" placeholder="e.g. Database Systems, Computer Networks" class="input-control" required>
+              </div>
+
+              <!-- Exam / Target Submission Deadline with Presets -->
+              <div style="margin-bottom: 12px;">
+                <label style="font-size: 12.5px; font-weight: 700; color: var(--text-muted); display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px;">
+                  <span>🎯 Target Exam / Milestone Deadline</span>
+                  <span id="planExamPreview" style="color: var(--primary); font-weight: 600; font-size: 11.5px;">Required</span>
+                </label>
+                <input type="datetime-local" id="planExamDeadline" class="input-control" style="margin-bottom: 6px;" required>
+                <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px;">
+                  <button type="button" class="preset-chip" onclick="setDeadlinePreset('planExamDeadline', '5days')">+5 Days</button>
+                  <button type="button" class="preset-chip" onclick="setDeadlinePreset('planExamDeadline', '2weeks')">+2 Weeks</button>
+                  <button type="button" class="preset-chip" onclick="setDeadlinePreset('planExamDeadline', '1month')">+1 Month</button>
+                </div>
+                <div class="field-hint">Day of the final exam or final assignment submission.</div>
+              </div>
+
+              <div style="margin-bottom: 12px;">
+                <label style="font-size: 12.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; display: block;">Available Study Time (Hours / Day)</label>
+                <input type="number" id="planHours" class="input-control" value="3.0" step="0.5" min="0.5" max="16" required>
+              </div>
+
+              <div style="margin-bottom: 14px;">
+                <label style="font-size: 12.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; display: block;">Syllabus Modules / Focus Topics (Comma or newline separated)</label>
+                <textarea id="planTopics" class="input-control" rows="3" placeholder="e.g. Relational Algebra & SQL, Indexing & B-Trees, Transaction ACID & Concurrency Control, Crash Recovery"></textarea>
+                <div class="field-hint">Leave blank to use comprehensive curriculum defaults.</div>
+              </div>
+
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; margin-bottom: 16px; cursor: pointer;">
+                <input type="checkbox" id="planAutoTasks" checked>
+                <span>Automatically create actionable tasks with deadlines leading up to exam day</span>
+              </label>
+
+              <button type="submit" class="ui-btn btn-primary" style="width: 100%; justify-content: center;">
+                <span>✨</span> Generate & Schedule Paced Study Plan
+              </button>
+            </form>
+          </div>
+
+          <!-- Active Study Plans List -->
+          <div class="card">
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 14px;">📚 Active AI Study Plans</h3>
+            <div id="academicPlansList">Loading study plans...</div>
+          </div>
+        </div>
+
+        <!-- Direct Academic Milestone / Assignment Logger -->
+        <div class="col-5">
+          <div class="card" style="margin-bottom: 22px;">
+            <h3 style="font-size: 18px; font-weight: 700; margin-bottom: 6px;">📝 Direct Academic Deadline Logger</h3>
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 14px;">
+              Register an upcoming university exam, lab viva, or project presentation with its hard deadline.
+            </p>
+            <form onsubmit="handleCreateAcademicDeadline(event)">
+              <input type="text" id="acadTitle" placeholder="Exam / Assignment Title (e.g. Midterm Theory Exam)" class="input-control" required>
+              <input type="text" id="acadSubject" placeholder="Course / Subject (e.g. Algorithms)" class="input-control" required>
+              
+              <div style="margin-bottom: 12px;">
+                <label style="font-size: 12.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 5px; display: block;">
+                  ⏰ Examination / Submission Deadline
+                </label>
+                <input type="datetime-local" id="acadDueDate" class="input-control" style="margin-bottom: 6px;" required>
+                <div style="display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px;">
+                  <button type="button" class="preset-chip" onclick="setDeadlinePreset('acadDueDate', 'tomorrow')">Tomorrow</button>
+                  <button type="button" class="preset-chip" onclick="setDeadlinePreset('acadDueDate', '3days')">+3 Days</button>
+                  <button type="button" class="preset-chip" onclick="setDeadlinePreset('acadDueDate', '1week')">+1 Week</button>
+                  <button type="button" class="preset-chip" onclick="setDeadlinePreset('acadDueDate', '2weeks')">+2 Weeks</button>
+                </div>
+              </div>
+
+              <select id="acadPriority" class="input-control" style="cursor: pointer;">
+                <option value="HIGH" selected>High Priority (Exam / Major Milestone)</option>
+                <option value="MEDIUM">Medium Priority</option>
+                <option value="LOW">Low Priority</option>
+              </select>
+
+              <textarea id="acadDesc" class="input-control" rows="2" placeholder="Course syllabus notes, venue, or submission link..."></textarea>
+
+              <button type="submit" class="ui-btn btn-primary" style="width: 100%; justify-content: center;">
+                <span>📅</span> Save Academic Deadline
+              </button>
+            </form>
+          </div>
+
+          <!-- Academic Exam Shield Card -->
+          <div class="card" style="border-left: 4px solid var(--accent);">
+            <div style="font-size: 12.5px; font-weight: 700; color: var(--accent); text-transform: uppercase;">🛡️ Academic Deadline Shield</div>
+            <p style="font-size: 13px; color: var(--text-muted); margin-top: 6px; line-height: 1.5;">
+              Deadlines added here automatically protect your schedule across other CampusLife modules:
+              <br>• <strong>Travel Shield</strong> warns if vacation dates overlap with exams.
+              <br>• <strong>Deadline Watcher</strong> automatically rings your phone when time expires.
+            </p>
+          </div>
+        </div>
+      </div>
+      </div>
+
+      <!-- ================= CALENDAR TAB ================= -->
+      <div class="tab-panel" id="panel-calendar">
+        <div class="card" style="margin-bottom: 24px;">
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px; margin-bottom: 18px;">
+            <div>
+              <h3 style="font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+                <span>📅</span> Deadlines Calendar
+              </h3>
+              <p style="font-size: 13px; color: var(--text-muted); margin-top: 2px;">
+                Every academic task, study session, and exam mapped to the exact day of its deadline
+              </p>
+            </div>
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+              <button class="ui-btn btn-glass" onclick="calMove(-1)">‹ Prev</button>
+              <button class="ui-btn btn-glass" onclick="calToday()">Today</button>
+              <button class="ui-btn btn-glass" onclick="calMove(1)">Next ›</button>
+              <button class="ui-btn btn-primary" onclick="exportToICalendar()" title="Download .ics file for Google Calendar, Apple Calendar, Outlook">
+                <span>📥</span> Export to Calendar (.ics)
+              </button>
+            </div>
+          </div>
+
+          <!-- Month Label & Legend -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+            <div class="cal-month-label" id="tabCalMonthLabel" style="font-size: 18px; font-weight: 800; color: var(--text);"></div>
+            <div style="display: flex; gap: 14px; font-size: 12px; color: var(--text-muted); flex-wrap: wrap;">
+              <span style="display: flex; align-items: center; gap: 5px;"><span class="cal-dot" style="background-color: #ef4444;"></span> High Priority / Overdue</span>
+              <span style="display: flex; align-items: center; gap: 5px;"><span class="cal-dot" style="background-color: #f59e0b;"></span> Medium Priority</span>
+              <span style="display: flex; align-items: center; gap: 5px;"><span class="cal-dot" style="background-color: #3b82f6;"></span> Low Priority</span>
+              <span style="display: flex; align-items: center; gap: 5px;"><span class="cal-dot" style="background-color: #10b981;"></span> Completed</span>
+            </div>
+          </div>
+
+          <div class="cal-grid" id="tabCalDows"></div>
+          <div class="cal-grid" id="tabCalDays" style="margin-top: 4px;"></div>
+
+          <!-- Selected Day Agenda -->
+          <div class="cal-agenda" id="tabCalAgenda" style="margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--card-border);"></div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Unified Shell Controller -->
+  <script src="/static/shared-shell.js"></script>
+
+  <!-- ================= DEADLINES CALENDAR (button-gated) ================= -->
+  <div class="cal-overlay" id="calendarOverlay" onclick="if(event.target===this) closeCalendar()">
+    <div class="cal-panel" role="dialog" aria-label="Deadlines Calendar">
+      <div class="cal-head">
+        <div class="cal-title">📅 Deadlines Calendar</div>
+        <div class="cal-nav">
+          <button class="ui-btn btn-glass" onclick="calMove(-1)" title="Previous month">‹ Prev</button>
+          <button class="ui-btn btn-glass" onclick="calToday()">Today</button>
+          <button class="ui-btn btn-glass" onclick="calMove(1)" title="Next month">Next ›</button>
+          <button class="ui-btn btn-glass" onclick="closeCalendar()" title="Close (Esc)">✕</button>
+        </div>
+      </div>
+      <div class="cal-month-label" id="calMonthLabel"></div>
+      <div class="cal-grid" id="calDows"></div>
+      <div class="cal-grid" id="calDays" style="margin-top: 4px;"></div>
+      <div class="cal-agenda" id="calAgenda"></div>
+    </div>
+  </div>
+
+  <!-- ================= EDIT TASK MODAL ================= -->
+  <div class="cal-overlay" id="editOverlay" onclick="if(event.target===this) closeEditTask()">
+    <div class="cal-panel" style="max-width: 470px;" role="dialog" aria-label="Edit Task">
+      <div class="cal-head">
+        <div class="cal-title">✎ Edit Task</div>
+        <div class="cal-nav">
+          <button class="ui-btn btn-glass" onclick="closeEditTask()" title="Close (Esc)">✕</button>
+        </div>
+      </div>
+      <form onsubmit="handleSaveEdit(event)" style="margin-top: 12px;">
+        <input type="text" id="editTitle" class="input-control" placeholder="Task title" required>
+        <input type="text" id="editSubject" class="input-control" placeholder="Subject (e.g. OS)">
+        <input type="datetime-local" id="editDueDate" class="input-control" title="Deadline (empty = none)">
+        <div class="field-hint">Deadline — date picks default to 11:59 PM. Clear the field to remove it.</div>
+        <select id="editPriority" class="input-control" style="cursor: pointer;">
+          <option value="HIGH">High Priority</option>
+          <option value="MEDIUM">Medium Priority</option>
+          <option value="LOW">Low Priority</option>
+        </select>
+        <textarea id="editDescription" class="input-control" rows="3" placeholder="Description (optional)" style="resize: vertical;"></textarea>
+        <button type="submit" class="ui-btn btn-primary" style="width: 100%; justify-content: center;">Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const HEADERS = { 'Authorization': 'Bearer user_1', 'Content-Type': 'application/json' };
+
+    let allTasks = [];
+    let calView = { y: new Date().getFullYear(), m: new Date().getMonth() };
+    let calSelectedKey = null;
+    let hiddenEditId = null;
+
+    /* ---- Time helpers: DB stores naive local time, browser shows local ---- */
+    function parseDue(s) {
+      if (!s) return null;
+      if (/[Zz]$/.test(s)) return new Date(s);
+      return new Date(s.replace(' ', 'T'));
+    }
+    function toDbNaive(val) {
+      if (!val) return null;
+      if (typeof val === 'string') {
+        return val.length === 16 ? val + ':00' : val;
+      }
+      if (val instanceof Date) {
+        return toLocalInput(val) + ':00';
+      }
+      return val;
+    }
+    function toLocalInput(d) {
+      const p = n => String(n).padStart(2, '0');
+      return d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + 'T' + p(d.getHours()) + ':' + p(d.getMinutes());
+    }
+    function fmtDue(s) {
+      const d = parseDue(s);
+      if (!d) return 'No deadline';
+      return d.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    }
+    function isOverdue(t) {
+      if (!t.due_date || t.status === 'COMPLETED') return false;
+      return parseDue(t.due_date) < new Date();
+    }
+    function defaultDeadlineTime(input) {
+      if (!input) return;
+      input.addEventListener('change', () => {
+        if (input.value && input.value.slice(11) === '00:00') {
+          input.value = input.value.slice(0, 10) + 'T23:59';
+        }
+      });
+    }
+
+    function updateDeadlinePreview(inputId) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      if (inputId === 'taskDueDate') {
+        const prev = document.getElementById('taskDeadlinePreview');
+        if (prev) {
+          prev.textContent = input.value ? fmtDue(toDbNaive(input.value)) : 'Optional';
+        }
+      } else if (inputId === 'planExamDeadline') {
+        const prev = document.getElementById('planExamPreview');
+        if (prev) {
+          prev.textContent = input.value ? fmtDue(toDbNaive(input.value)) : 'Required';
+        }
+      }
+    }
+
+    function setDeadlinePreset(inputId, preset) {
+      const input = document.getElementById(inputId);
+      if (!input) return;
+      if (preset === 'clear') {
+        input.value = '';
+        updateDeadlinePreview(inputId);
+        return;
+      }
+      const d = new Date();
+      if (preset === 'today') {
+        d.setHours(23, 59, 0, 0);
+      } else if (preset === 'tomorrow') {
+        d.setDate(d.getDate() + 1);
+        d.setHours(23, 59, 0, 0);
+      } else if (preset === '3days') {
+        d.setDate(d.getDate() + 3);
+        d.setHours(23, 59, 0, 0);
+      } else if (preset === '5days') {
+        d.setDate(d.getDate() + 5);
+        d.setHours(23, 59, 0, 0);
+      } else if (preset === '1week') {
+        d.setDate(d.getDate() + 7);
+        d.setHours(23, 59, 0, 0);
+      } else if (preset === '2weeks') {
+        d.setDate(d.getDate() + 14);
+        d.setHours(23, 59, 0, 0);
+      } else if (preset === '1month') {
+        d.setMonth(d.getMonth() + 1);
+        d.setHours(23, 59, 0, 0);
+      }
+      input.value = toLocalInput(d);
+      updateDeadlinePreview(inputId);
+    }
+
+    ['taskDueDate', 'editDueDate', 'acadDueDate', 'planExamDeadline'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        defaultDeadlineTime(el);
+        el.addEventListener('change', () => updateDeadlinePreview(id));
+      }
+    });
+
+    async function loadTasks() {
+      try {
+        const [tasksRes, riskRes] = await Promise.all([
+          fetch('/api/study/tasks', { headers: HEADERS }),
+          fetch('/api/study/productivity/risk', { headers: HEADERS })
+        ]);
+        const tasks = await tasksRes.json();
+        const risk = await riskRes.json();
+        allTasks = tasks || [];
+        renderCalendar();
+
+        document.getElementById('riskBadge').textContent = 'Productivity Risk: ' + risk.risk_level;
+        document.getElementById('riskBadge').className = risk.risk_level === 'HIGH' ? 'badge-high' : 'badge-med';
+
+        const container = document.getElementById('taskList');
+        if (!tasks || tasks.length === 0) {
+          container.innerHTML = '<div style="color: var(--text-muted); padding: 12px 0;">No pending academic tasks found.</div>';
+          return;
+        }
+
+        container.innerHTML = tasks.map(t => {
+          const od = isOverdue(t);
+          return `
+          <div class="task-item ${t.status === 'COMPLETED' ? 'completed' : ''}">
+            <div style="display: flex; align-items: center; gap: 14px;">
+              <div class="task-check" onclick="toggleTask(${t.id})">${t.status === 'COMPLETED' ? '✓' : ''}</div>
+              <div>
+                <div class="task-title" style="font-size: 15px; font-weight: 600;">${t.title}</div>
+                <div style="font-size: 12.5px; color: var(--text-muted); margin-top: 3px;">
+                  ${t.subject} • ${t.source} • Due ${t.due_date ? fmtDue(t.due_date) : 'No deadline'}${od ? ' • <span style="color: #ef4444; font-weight: 800;">OVERDUE</span>' : ''}
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <span class="${t.priority === 'HIGH' ? 'badge-high' : 'badge-med'}">${t.priority}</span>
+              <button class="task-edit-btn" onclick="openEditTask(${t.id})" title="Edit Task">✎</button>
+              <button onclick="deleteTask(${t.id})" style="background: none; border: none; color: #ef4444; font-size: 16px; cursor: pointer; padding: 4px;" title="Delete Task">✕</button>
+            </div>
+          </div>`;
+        }).join('');
+      } catch (err) {
+        console.error('Error loading tasks:', err);
+      }
+    }
+
+    async function toggleTask(id) {
+      await fetch(`/api/study/tasks/${id}/complete`, { method: 'POST', headers: HEADERS });
+      showToast('Task updated', '✓');
+      loadTasks();
+    }
+
+    async function deleteTask(id) {
+      await fetch(`/api/study/tasks/${id}`, { method: 'DELETE', headers: HEADERS });
+      showToast('Task removed', '🗑️');
+      loadTasks();
+    }
+
+    async function handleCreateTask(e) {
+      e.preventDefault();
+      const title = document.getElementById('taskTitle').value;
+      const subject = document.getElementById('taskSubject').value || 'General';
+      const priority = document.getElementById('taskPriority').value;
+      const dueInput = document.getElementById('taskDueDate').value;
+
+      await fetch('/api/study/tasks', {
+        method: 'POST',
+        headers: HEADERS,
+        body: JSON.stringify({
+          title: title,
+          subject: subject,
+          priority: priority,
+          due_date: dueInput ? toDbNaive(dueInput) : null
+        })
+      });
+      document.getElementById('taskTitle').value = '';
+      document.getElementById('taskDueDate').value = '';
+      updateDeadlinePreview('taskDueDate');
+      showToast('Task created successfully', '✅');
+      loadTasks();
+    }
+
+    async function handleCreateAcademicDeadline(e) {
+      e.preventDefault();
+      const title = document.getElementById('acadTitle').value;
+      const subject = document.getElementById('acadSubject').value || 'Academic';
+      const priority = document.getElementById('acadPriority').value || 'HIGH';
+      const desc = document.getElementById('acadDesc').value || '';
+      const dueVal = document.getElementById('acadDueDate').value;
+
+      try {
+        const res = await fetch('/api/study/tasks', {
+          method: 'POST',
+          headers: HEADERS,
+          body: JSON.stringify({
+            title: title,
+            subject: subject,
+            priority: priority,
+            description: desc,
+            due_date: dueVal ? toDbNaive(dueVal) : null
+          })
+        });
+        if (!res.ok) throw new Error('Failed to create academic deadline');
+
+        document.getElementById('acadTitle').value = '';
+        document.getElementById('acadSubject').value = '';
+        document.getElementById('acadDueDate').value = '';
+        document.getElementById('acadDesc').value = '';
+        showToast('Academic deadline registered and mapped to calendar!', '🎓');
+        await loadTasks();
+      } catch (err) {
+        console.error(err);
+        showToast('Error registering deadline: ' + err.message, '⚠️');
+      }
+    }
+
+    async function handleGeneratePlan(e) {
+      e.preventDefault();
+      const subject = document.getElementById('planSubject').value;
+      const examDateVal = document.getElementById('planExamDeadline').value;
+      const hours = parseFloat(document.getElementById('planHours').value) || 3.0;
+      const topicsRaw = document.getElementById('planTopics').value || '';
+      const autoTasks = document.getElementById('planAutoTasks').checked;
+
+      const topics = topicsRaw.split(/[,\n]/)
+        .map(s => s.trim())
+        .filter(s => s.length > 0);
+
+      try {
+        const res = await fetch('/api/study/study-plans/generate', {
+          method: 'POST',
+          headers: HEADERS,
+          body: JSON.stringify({
+            subject: subject,
+            exam_date: toDbNaive(examDateVal),
+            available_hours_per_day: hours,
+            topics: topics.length ? topics : [],
+            auto_create_tasks: autoTasks
+          })
+        });
+        if (!res.ok) {
+          const errData = await res.json();
+          throw new Error(errData.detail || 'Failed to generate plan');
+        }
+        showToast(`AI Study Plan generated with deadlines for ${subject}!`, '✨');
+        document.getElementById('planSubject').value = '';
+        document.getElementById('planTopics').value = '';
+        await loadTasks();
+        await loadAcademicStudyPlans();
+      } catch (err) {
+        console.error(err);
+        showToast('Failed to generate study plan: ' + err.message, '⚠️');
+      }
+    }
+
+    async function loadAcademicStudyPlans() {
+      const container = document.getElementById('academicPlansList');
+      if (!container) return;
+      try {
+        const res = await fetch('/api/study/study-plans', { headers: HEADERS });
+        if (!res.ok) return;
+        const plans = await res.json();
+        if (!plans || plans.length === 0) {
+          container.innerHTML = '<div style="color: var(--text-muted); padding: 10px 0; font-size: 13.5px;">No active AI study plans yet. Use the generator above to create one.</div>';
+          return;
+        }
+        container.innerHTML = plans.map(p => {
+          let planItems = [];
+          try {
+            planItems = JSON.parse(p.plan_data);
+          } catch(e) {}
+          const examStr = p.exam_date ? fmtDue(p.exam_date) : 'Upcoming';
+          return `
+          <div class="card" style="margin-bottom: 12px; border-left: 4px solid var(--primary); background: var(--surface);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <strong style="font-size: 15.5px; color: var(--text);">${p.subject}</strong>
+              <span class="badge badge-med">Exam: ${examStr}</span>
+            </div>
+            <div style="font-size: 12.5px; color: var(--text-muted); margin-bottom: 10px;">
+              ${planItems.length} Milestones Scheduled • Paced Deadlines Active
+            </div>
+              ${planItems.slice(0, 4).map(item => {
+                const dayNum = item.day_number || item.day || 1;
+                const dateText = item.date ? `${item.date} • ` : '';
+                const timeText = item.estimated_minutes ? `${item.estimated_minutes}m` : '60m';
+                return `
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12.5px; padding: 6px 10px; background: rgba(0,0,0,0.03); border-radius: 6px;">
+                  <span>Day ${dayNum}: <strong>${item.topic || 'Review session'}</strong></span>
+                  <span style="color: var(--text-muted); font-size: 11.5px;">${dateText}${timeText}</span>
+                </div>`;
+              }).join('')}
+              ${planItems.length > 4 ? `<div style="font-size: 12px; color: var(--text-muted); text-align: center;">+ ${planItems.length - 4} more sessions mapped to calendar</div>` : ''}
+            </div>
+          </div>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error('Error loading study plans:', err);
+      }
+    }
+
+    /* ================= TAB SWITCHING ================= */
+    function switchTab(name) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === name));
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.toggle('active', p.id === 'panel-' + name));
+      if (name === 'calendar') {
+        renderCalendar();
+      } else if (name === 'academic') {
+        loadAcademicStudyPlans();
+      }
+    }
+
+    /* ================= DEADLINES CALENDAR ================= */
+    function dateKey(d) {
+      return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+    }
+
+    function openCalendar() {
+      const now = new Date();
+      calView = { y: now.getFullYear(), m: now.getMonth() };
+      calSelectedKey = dateKey(now);
+      document.getElementById('calendarOverlay').classList.add('open');
+      renderCalendar();
+    }
+
+    function closeCalendar() {
+      document.getElementById('calendarOverlay').classList.remove('open');
+    }
+
+    function calMove(delta) {
+      calView.m += delta;
+      if (calView.m < 0) { calView.m = 11; calView.y--; }
+      if (calView.m > 11) { calView.m = 0; calView.y++; }
+      calSelectedKey = null;
+      renderCalendar();
+    }
+
+    function calToday() {
+      const n = new Date();
+      calView = { y: n.getFullYear(), m: n.getMonth() };
+      calSelectedKey = dateKey(n);
+      renderCalendar();
+    }
+
+    function selectDay(k) {
+      calSelectedKey = k;
+      renderCalendar();
+    }
+
+    function tasksByDate() {
+      const map = {};
+      allTasks.forEach(t => {
+        if (!t.due_date) return;
+        const k = dateKey(parseDue(t.due_date));
+        (map[k] = map[k] || []).push(t);
+      });
+      return map;
+    }
+
+    function renderCalendar() {
+      const dows = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+      const dowsHtml = dows.map(d => `<div class="cal-dow">${d}</div>`).join('');
+      const calDowsEl = document.getElementById('calDows');
+      const tabCalDowsEl = document.getElementById('tabCalDows');
+      if (calDowsEl) calDowsEl.innerHTML = dowsHtml;
+      if (tabCalDowsEl) tabCalDowsEl.innerHTML = dowsHtml;
+
+      const first = new Date(calView.y, calView.m, 1);
+      const startOffset = (first.getDay() + 6) % 7; // Monday-first grid
+      const gridStart = new Date(calView.y, calView.m, 1 - startOffset);
+      const map = tasksByDate();
+      const todayKey = dateKey(new Date());
+
+      let html = '';
+      for (let i = 0; i < 42; i++) {
+        const d = new Date(gridStart.getFullYear(), gridStart.getMonth(), gridStart.getDate() + i);
+        const k = dateKey(d);
+        const inMonth = d.getMonth() === calView.m;
+        const dayTasks = map[k] || [];
+        const dots = dayTasks.slice(0, 6).map(t => {
+          const od = isOverdue(t);
+          const color = t.status === 'COMPLETED' ? '#10b981'
+            : od ? '#ef4444'
+            : t.priority === 'HIGH' ? '#ef4444'
+            : t.priority === 'LOW' ? '#3b82f6'
+            : '#f59e0b';
+          const title = t.status === 'COMPLETED' ? 'Completed' : (od ? 'Overdue: ' : 'Due: ') + t.title;
+          return `<span class="cal-dot" style="background-color:${color}" title="${title.replace(/"/g, '&quot;')}"></span>`;
+        }).join('');
+        html += `<div class="cal-day ${inMonth ? '' : 'other'} ${k === todayKey ? 'today' : ''} ${k === calSelectedKey ? 'selected' : ''}" onclick="selectDay('${k}')">
+          <div class="cal-day-num">${d.getDate()}</div>
+          <div class="cal-dots">${dots}</div>
+        </div>`;
+      }
+
+      const monthStr = first.toLocaleString('default', { month: 'long', year: 'numeric' });
+      const calMonthEl = document.getElementById('calMonthLabel');
+      const tabCalMonthEl = document.getElementById('tabCalMonthLabel');
+      if (calMonthEl) calMonthEl.textContent = monthStr;
+      if (tabCalMonthEl) tabCalMonthEl.textContent = monthStr;
+
+      const calDaysEl = document.getElementById('calDays');
+      const tabCalDaysEl = document.getElementById('tabCalDays');
+      if (calDaysEl) calDaysEl.innerHTML = html;
+      if (tabCalDaysEl) tabCalDaysEl.innerHTML = html;
+
+      renderAgenda();
+    }
+
+    function renderAgenda() {
+      const modalEl = document.getElementById('calAgenda');
+      const tabEl = document.getElementById('tabCalAgenda');
+      if (!calSelectedKey) {
+        if (modalEl) modalEl.innerHTML = '';
+        if (tabEl) tabEl.innerHTML = '<div style="color: var(--text-muted); font-size: 13.5px;">Click any day on the calendar to inspect deadlines mapped to that date.</div>';
+        return;
+      }
+
+      const map = tasksByDate();
+      const list = map[calSelectedKey] || [];
+      const label = new Date(calSelectedKey + 'T00:00:00').toLocaleDateString(undefined, { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' });
+
+      let content = '';
+      if (!list.length) {
+        content = `<div class="cal-agenda-title">${label}</div>
+          <div style="color: var(--text-muted); font-size: 13.5px;">No deadlines or tasks scheduled on this day.</div>`;
+      } else {
+        content = `<div class="cal-agenda-title">${label} — ${list.length} task${list.length > 1 ? 's' : ''}</div>` + list.map(t => {
+          const overdue = isOverdue(t);
+          const time = parseDue(t.due_date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+          const done = t.status === 'COMPLETED';
+          return `<div class="agenda-item" style="${done ? 'opacity: 0.6;' : ''}">
+            <div style="display: flex; align-items: center; gap: 12px; min-width: 0;">
+              <div class="task-check" onclick="toggleTask(${t.id})" title="Toggle complete">${done ? '✓' : ''}</div>
+              <div style="min-width: 0;">
+                <div style="font-size: 14px; font-weight: 600; ${done ? 'text-decoration: line-through;' : ''}">${t.title}</div>
+                <div style="font-size: 12px; color: var(--text-muted); margin-top: 2px;">
+                  ${t.subject} • ${time}${overdue ? ' • <span style="color: #ef4444; font-weight: 800;">OVERDUE</span>' : ''}${done ? ' • <span style="color: #10b981; font-weight: 700;">DONE</span>' : ''}
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 9px; flex-shrink: 0;">
+              <span class="${t.priority === 'HIGH' ? 'badge-high' : 'badge-med'}">${t.priority}</span>
+              <button class="task-edit-btn" onclick="openEditTask(${t.id})" title="Edit task">✎</button>
+              <button onclick="deleteTask(${t.id})" style="background: none; border: none; color: #ef4444; font-size: 15px; cursor: pointer; padding: 4px;" title="Delete task">✕</button>
+            </div>
+          </div>`;
+        }).join('');
+      }
+
+      if (modalEl) modalEl.innerHTML = content;
+      if (tabEl) tabEl.innerHTML = content;
+    }
+
+    function refreshCalendarIfOpen() {
+      renderCalendar();
+    }
+
+    /* ================= CALENDAR SERVICE INTEGRATION (RFC-5545 .ics) ================= */
+    function exportToICalendar() {
+      const tasksWithDue = allTasks.filter(t => t.due_date);
+      if (!tasksWithDue.length) {
+        showToast('No tasks with deadlines to export yet.', '⚠️');
+        return;
+      }
+
+      function toIcsTimestamp(d) {
+        const p = n => String(n).padStart(2, '0');
+        return d.getUTCFullYear() +
+          p(d.getUTCMonth() + 1) +
+          p(d.getUTCDate()) + 'T' +
+          p(d.getUTCHours()) +
+          p(d.getUTCMinutes()) +
+          p(d.getUTCSeconds()) + 'Z';
+      }
+
+      const nowStamp = toIcsTimestamp(new Date());
+      let ics = [
+        'BEGIN:VCALENDAR',
+        'VERSION:2.0',
+        'PRODID:-//CampusLife AI//Academic Deadlines Calendar//EN',
+        'CALSCALE:GREGORIAN',
+        'METHOD:PUBLISH',
+        'X-WR-CALNAME:CampusLife Academic Deadlines',
+        'X-WR-TIMEZONE:UTC'
+      ];
+
+      tasksWithDue.forEach(t => {
+        const start = parseDue(t.due_date);
+        const end = new Date(start.getTime() + 60 * 60 * 1000); // 1-hour event block
+        const cleanSummary = (t.title || 'Academic Task').replace(/[\r\n]+/g, ' ');
+        const cleanDesc = `Subject: ${t.subject || 'General'}\\nPriority: ${t.priority || 'MEDIUM'}\\nStatus: ${t.status || 'PENDING'}\\nSource: ${t.source || 'Study'}`;
+
+        ics.push('BEGIN:VEVENT');
+        ics.push(`UID:campuslife-task-${t.id}@campuslife.app`);
+        ics.push(`DTSTAMP:${nowStamp}`);
+        ics.push(`DTSTART:${toIcsTimestamp(start)}`);
+        ics.push(`DTEND:${toIcsTimestamp(end)}`);
+        ics.push(`SUMMARY:[${t.subject || 'Study'}] ${cleanSummary}`);
+        ics.push(`DESCRIPTION:${cleanDesc}`);
+        ics.push(`PRIORITY:${t.priority === 'HIGH' ? '1' : t.priority === 'LOW' ? '9' : '5'}`);
+        ics.push(`STATUS:${t.status === 'COMPLETED' ? 'COMPLETED' : 'CONFIRMED'}`);
+        ics.push('END:VEVENT');
+      });
+
+      ics.push('END:VCALENDAR');
+      const blob = new Blob([ics.join('\r\n')], { type: 'text/calendar;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `campuslife-deadlines-${new Date().toISOString().slice(0, 10)}.ics`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Exported .ics calendar file! Open to map to Google / Apple / Outlook Calendar.', '📅');
+    }
+
+    /* ================= EDIT TASK ================= */
+    function openEditTask(id) {
+      const t = allTasks.find(x => x.id === id);
+      if (!t) return;
+      hiddenEditId = t.id;
+      document.getElementById('editTitle').value = t.title || '';
+      document.getElementById('editSubject').value = t.subject || '';
+      document.getElementById('editPriority').value = t.priority || 'MEDIUM';
+      document.getElementById('editDescription').value = t.description || '';
+      document.getElementById('editDueDate').value = t.due_date ? toLocalInput(parseDue(t.due_date)) : '';
+      document.getElementById('editOverlay').classList.add('open');
+      document.getElementById('editTitle').focus();
+    }
+
+    function closeEditTask() {
+      document.getElementById('editOverlay').classList.remove('open');
+    }
+
+    async function handleSaveEdit(e) {
+      e.preventDefault();
+      const v = document.getElementById('editDueDate').value;
+      await fetch(`/api/study/tasks/${hiddenEditId}`, {
+        method: 'PATCH',
+        headers: HEADERS,
+        body: JSON.stringify({
+          title: document.getElementById('editTitle').value,
+          subject: document.getElementById('editSubject').value || 'General',
+          priority: document.getElementById('editPriority').value,
+          description: document.getElementById('editDescription').value,
+          due_date: v ? toDbNaive(v) : null
+        })
+      });
+      closeEditTask();
+      showToast('Task updated', '✏️');
+      loadTasks();
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Escape') return;
+      if (document.getElementById('editOverlay').classList.contains('open')) closeEditTask();
+      else closeCalendar();
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadTasks();
+      loadAcademicStudyPlans();
+    });
+  </script>
+</body>
+</html>

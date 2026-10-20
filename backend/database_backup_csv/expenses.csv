@@ -1,0 +1,6 @@
+id,user_id,amount,currency,category,merchant,description,expense_date,payment_method,source,created_at
+1,1,4500.0,INR,Food,Hostel Mess & Canteen,,2026-09-26,UPI,MANUAL,2026-10-06 05:58:25.667420
+2,1,2200.0,INR,Education,University Book Store,,2026-09-28,UPI,MANUAL,2026-10-06 05:58:25.667424
+3,1,1600.0,INR,Transport,Uber & Metro Pass,,2026-10-01,UPI,MANUAL,2026-10-06 05:58:25.667425
+4,1,1500.0,INR,Food,Campus Cafeteria & Late Night Snacks,,2026-10-05,UPI,MANUAL,2026-10-06 05:58:25.667427
+5,1,1000.0,INR,Food,Direct Entry,Rs 1000 spent on food item,2026-10-07,UPI,AI_VOICE_AGENT,2026-10-07 11:01:52.285046

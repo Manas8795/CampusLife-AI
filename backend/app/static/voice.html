@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="alabaster">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Voice Assistant & Speech Studio — CampusLife AI</title>
+  
+  <!-- Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Unified Shared Shell Styling -->
+  <link rel="stylesheet" href="/static/shared-shell.css">
+
+  <!-- 3D Engine & Animation: Three.js and GSAP -->
+  <script src="/static/vendor/three.min.js"></script>
+  <script src="/static/vendor/gsap.min.js"></script>
+
+  <style>
+    /* Chat & Voice Bubbles */
+    .chat-bubble-wrap {
+      display: flex; gap: 10px; margin-bottom: 14px; align-items: flex-start;
+    }
+    .chat-bubble-wrap.user {
+      flex-direction: row-reverse;
+    }
+    .chat-avatar {
+      width: 34px; height: 34px; border-radius: 10px; display: flex;
+      align-items: center; justify-content: center; font-size: 15px; flex-shrink: 0;
+    }
+    .chat-avatar.ai {
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: #fff; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+    }
+    .chat-avatar.usr {
+      background: var(--row-bg); border: 1px solid var(--card-border);
+      color: var(--text-main);
+    }
+    .chat-bubble {
+      padding: 12px 16px; border-radius: 16px; font-size: 13.5px; line-height: 1.6;
+      max-width: 82%; position: relative;
+    }
+    .bubble-user {
+      background: rgba(37, 99, 235, 0.1); border: 1px solid rgba(37, 99, 235, 0.25);
+      color: var(--text-main); border-top-right-radius: 4px;
+    }
+    .bubble-assistant {
+      background: var(--row-bg); border: 1px solid var(--card-border);
+      color: var(--text-main); border-top-left-radius: 4px;
+    }
+
+    /* Tactile Microphone & Voice Ripple */
+    .mic-btn-container {
+      position: relative; display: inline-flex; align-items: center; justify-content: center;
+    }
+    .mic-ripple-ring {
+      position: absolute; width: 54px; height: 54px; border-radius: 50%;
+      border: 2px solid var(--primary); opacity: 0; pointer-events: none;
+    }
+    .mic-btn-container.recording .mic-ripple-ring {
+      animation: mic-ripple 1.4s cubic-bezier(0.1, 0.7, 0.1, 1) infinite;
+    }
+    .mic-btn-container.recording .mic-ripple-ring:nth-child(2) {
+      animation-delay: 0.4s;
+    }
+    @keyframes mic-ripple {
+      0% { transform: scale(0.9); opacity: 0.8; }
+      100% { transform: scale(1.8); opacity: 0; }
+    }
+    .btn-mic {
+      width: 48px; height: 48px; border-radius: 14px; display: flex;
+      align-items: center; justify-content: center; font-size: 20px;
+      cursor: pointer; border: 1px solid var(--card-border); background: var(--input-bg);
+      color: var(--text-main); transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      position: relative; z-index: 2;
+    }
+    .btn-mic:hover {
+      border-color: var(--primary); transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.2);
+    }
+    .btn-mic.active-recording {
+      background: linear-gradient(135deg, #ef4444, #dc2626); color: #fff;
+      border-color: #ef4444; box-shadow: 0 0 20px rgba(239, 68, 68, 0.5);
+    }
+
+    /* 3D Voice Orb Canvas Container */
+    .voice-orb-card {
+      background: var(--card-bg); border: 1px solid var(--card-border);
+      border-radius: 20px; padding: 20px; position: relative; overflow: hidden;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .voice-orb-canvas {
+      width: 100%; height: 240px; cursor: grab; display: block;
+    }
+    .voice-orb-canvas:active { cursor: grabbing; }
+
+    /* Audio Equalizer Spectrum Bar */
+    .equalizer-bar-wrap {
+      display: flex; align-items: flex-end; justify-content: center; gap: 4px;
+      height: 38px; width: 100%; padding: 0 10px; margin-top: 8px;
+    }
+    .eq-bar {
+      width: 4px; height: 6px; border-radius: 3px; background: var(--primary);
+      transition: height 0.08s ease; opacity: 0.75;
+    }
+    .eq-bar.active {
+      opacity: 1; background: linear-gradient(to top, var(--primary), #38bdf8);
+    }
+
+    /* Fast Voice Command Chips */
+    .voice-chip {
+      padding: 6px 12px; border-radius: 20px; font-size: 11.5px; font-weight: 600;
+      background: var(--row-bg); border: 1px solid var(--card-border);
+      color: var(--text-muted); cursor: pointer; transition: all 0.2s; white-space: nowrap;
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+    .voice-chip:hover {
+      border-color: var(--primary); color: var(--text-main);
+      transform: translateY(-1px); background: rgba(37, 99, 235, 0.08);
+    }
+
+    /* Live Telemetry Pill */
+    .telemetry-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 14px; background: var(--row-bg); border-radius: 12px;
+      border: 1px solid var(--card-border); margin-bottom: 8px; font-size: 12.5px;
+    }
+    .telemetry-item strong { color: var(--text-main); }
+    .telemetry-item span { color: var(--text-muted); }
+
+    /* Replay Speech Button */
+    .btn-replay-audio {
+      background: none; border: none; cursor: pointer; font-size: 13px;
+      color: var(--text-muted); padding: 2px 6px; border-radius: 4px;
+      transition: color 0.2s; margin-left: 6px;
+    }
+    .btn-replay-audio:hover { color: var(--primary); }
+
+    /* Permanent Contained Voice Dialogue Card */
+    .voice-dialogue-card {
+      height: 680px !important;
+      max-height: 680px !important;
+      min-height: 520px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+      padding: 18px 20px !important;
+      position: relative !important;
+    }
+
+    /* Contained & Smoothly Scrollable Chat Stream */
+    #chatMessages {
+      flex: 1 1 0 !important;
+      min-height: 0 !important;
+      max-height: 100% !important;
+      overflow-y: auto !important;
+      overflow-x: hidden !important;
+      scroll-behavior: smooth !important;
+    }
+    #chatMessages::-webkit-scrollbar {
+      width: 8px;
+    }
+    #chatMessages::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.04);
+      border-radius: 8px;
+    }
+    #chatMessages::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.45);
+      border-radius: 8px;
+    }
+    #chatMessages::-webkit-scrollbar-thumb:hover {
+      background: var(--primary);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Floating Quick-Open Tab when Sidebar is closed -->
+  <button class="floating-sidebar-trigger" onclick="toggleSidebar()" title="Open Navigation Bar" id="floatingSidebarTrigger">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+    <span>Open Menu</span>
+  </button>
+
+  <!-- ================= LEFT NAVIGATION SIDEBAR ================= -->
+  <aside class="sidebar" id="sidebar">
+    <div>
+      <!-- Brand Capsule with Close Button -->
+      <div class="brand-box">
+        <div class="brand-left">
+          <div class="brand-icon">🎓</div>
+          <div>
+            <div class="brand-title">CampusLife AI</div>
+            <div class="brand-sub">Student Life Intelligence</div>
+          </div>
+        </div>
+        <button class="sidebar-action-btn" onclick="toggleSidebar()" title="Close Navigation Bar (Ctrl+B)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Navigation Section: Core -->
+      <div class="nav-sec-label">Workspace</div>
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a href="/">
+            <span class="nav-icon">📊</span>
+            <span>Life Analytics Hub</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/call">
+            <span class="nav-icon">📱</span>
+            <span>Phone Standby</span>
+            <span class="nav-badge-pill">STANDBY</span>
+          </a>
+        </li>
+        <li class="nav-item active">
+          <a href="/voice">
+            <span class="nav-icon">🎙️</span>
+            <span>Voice Co-Pilot</span>
+          </a>
+        </li>
+      </ul>
+
+      <!-- Navigation Section: Academic & Life Modules -->
+      <div class="nav-sec-label" style="margin-top: 14px;">Modules</div>
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a href="/study">
+            <span class="nav-icon">📚</span>
+            <span>Academics & Tasks</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/health">
+            <span class="nav-icon">🧘</span>
+            <span>Health & Vitals</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/expenses">
+            <span class="nav-icon">💳</span>
+            <span>Budget & Runway</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/travel">
+            <span class="nav-icon">✈️</span>
+            <span>Trip Planner</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/intelligence">
+            <span class="nav-icon">🧠</span>
+            <span>Student Intelligence</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="/infra">
+            <span class="nav-icon">⚙️</span>
+            <span>AI/ML Infra</span>
+          </a>
+        </li>
+      </ul>
+
+      <!-- 5-Theme Switcher -->
+      <!-- Multi-Theme Switcher (Light & Dark Suites) -->
+      <div class="theme-picker-card">
+        <div class="theme-picker-head">
+          <span>Active Theme</span>
+          <span id="themeLabel" style="color: var(--primary-light); font-weight: 700;">Alabaster</span>
+        </div>
+        <div class="theme-picker-sublabel">Light Themes</div>
+        <div class="theme-swatch-row" style="margin-bottom: 8px;">
+          <div class="swatch-btn active" style="background: linear-gradient(135deg, #ffffff, #2563eb);" title="Alabaster Slate (Light)" onclick="switchTheme('alabaster', this, 'Alabaster')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #e0f2fe, #0284c7);" title="Nordic Frost (Light)" onclick="switchTheme('nordic', this, 'Nordic Frost')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #ffe4e6, #e11d48);" title="Sakura Blossom (Light)" onclick="switchTheme('sakura', this, 'Sakura')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #dcfce7, #059669);" title="Matcha Sage (Light)" onclick="switchTheme('matcha', this, 'Matcha')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #fef3c7, #d97706);" title="Caramel Latte (Light)" onclick="switchTheme('latte', this, 'Latte')"></div>
+        </div>
+        <div class="theme-picker-sublabel">Dark Themes</div>
+        <div class="theme-swatch-row dark-row">
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #070a14, #6366f1);" title="Midnight Obsidian (Dark)" onclick="switchTheme('midnight', this, 'Midnight')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #090314, #ec4899);" title="Cyberpunk Neon (Dark)" onclick="switchTheme('cyberpunk', this, 'Cyberpunk')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #030d0a, #10b981);" title="Emerald Matrix (Dark)" onclick="switchTheme('emerald', this, 'Emerald')"></div>
+          <div class="swatch-btn" style="background: linear-gradient(135deg, #0c0806, #f59e0b);" title="Solar Sunset (Dark)" onclick="switchTheme('solar', this, 'Solar')"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sentinel System Telemetry Footer -->
+    <div class="system-footer">
+      <div class="system-avatar">🎙️</div>
+      <div>
+        <div class="system-name">Voice Neural Core</div>
+        <div class="system-status">
+          <span style="font-size: 8px; color: #10b981;">●</span> Full-Duplex Ready
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ================= MAIN WORKSPACE CANVAS ================= -->
+  <main class="workspace-main">
+    
+    <!-- Top Command Header Bar -->
+    <div class="top-command-bar">
+      <div class="breadcrumbs-wrap">
+        <button class="nav-toggle-icon-btn" onclick="toggleSidebar()" title="Toggle Navigation Bar (Ctrl+B)">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="9" y1="3" x2="9" y2="21"></line>
+          </svg>
+        </button>
+        <div class="breadcrumbs">
+          <span>Workspace</span>
+          <span>/</span>
+          <span class="current">AI Voice Assistant & Speech Studio</span>
+        </div>
+      </div>
+
+      <div class="header-btns">
+        <button id="toggleAudioBtn" class="ui-btn btn-glass" onclick="toggleAudioMute()" title="Toggle Voice Audio Playback">
+          <span id="audioIcon">🔊</span>
+          <span id="audioLabel">Voice Audio: ON</span>
+        </button>
+        <button class="ui-btn btn-glass" onclick="clearChatHistory()" title="Clear conversation ledger">
+          <span>🗑️</span>
+          <span>Clear Dialogue</span>
+        </button>
+        <a href="/health" class="ui-btn btn-primary">
+          <span>🧘</span>
+          <span>View Health & Vitals</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Workspace Canvas Content -->
+    <div class="workspace-canvas">
+      
+      <!-- Studio Header Capsule -->
+      <div style="margin-bottom: 24px;">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 6px; flex-wrap: wrap;">
+          <h1 style="font-size: 28px; font-weight: 800; letter-spacing: -0.02em;">AI Voice Assistant & Speech Studio</h1>
+          <span style="font-size: 11px; padding: 3px 10px; border-radius: 20px; background: rgba(16, 185, 129, 0.15); color: #059669; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.3);">
+            ● Full-Duplex Neural Speech Engine
+          </span>
+          <span style="font-size: 11px; padding: 3px 10px; border-radius: 20px; background: rgba(37, 99, 235, 0.12); color: var(--primary); font-weight: 700; border: 1px solid rgba(37, 99, 235, 0.25);">
+            ⚡ Direct Database Write
+          </span>
+        </div>
+        <p style="color: var(--text-muted); font-size: 14px; line-height: 1.5;">
+          Speak or type commands to naturally log health vitals, manage coursework deadlines, record mess expenses, and plan exam schedules in real-time.
+        </p>
+      </div>
+
+      <!-- Persona & Student Co-Pilot Configuration Bar -->
+      <div style="background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 16px; padding: 14px 20px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+        <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="width: 38px; height: 38px; border-radius: 10px; background: rgba(37, 99, 235, 0.12); border: 1px solid rgba(37, 99, 235, 0.25); display: flex; align-items: center; justify-content: center; font-size: 18px;">
+            🤖
+          </div>
+          <div>
+            <div style="font-size: 13.5px; font-weight: 700; color: var(--text-main); display: flex; align-items: center; gap: 8px;">
+              <span id="activeEngineLabel">Local Student Domain LLM (Llama 3.2 / Offline)</span>
+              <span style="font-size: 10px; padding: 2px 7px; border-radius: 6px; background: rgba(16, 185, 129, 0.15); color: #059669; font-weight: 700;">Zero External Telephony Cost</span>
+            </div>
+            <div style="font-size: 11.5px; color: var(--text-muted); margin-top: 2px;">
+              Direct tool bindings for Health Logs, Task Manager, Expense Ledger, and Academic Conflict Shield.
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <label style="font-size: 12px; color: var(--text-muted); font-weight: 600;">Active Persona:</label>
+          <select id="personaSelect" style="background: var(--input-bg); color: var(--text-main); border: 1px solid var(--card-border); border-radius: 8px; padding: 7px 12px; font-size: 12.5px; outline: none; cursor: pointer; font-family: inherit;">
+            <option value="EMPATHETIC_MENTOR">🎓 Empathetic Academic Mentor</option>
+            <option value="PRODUCTIVITY_COACH">⚡ High-Productivity Coach</option>
+            <option value="CAMPUS_PEER">🤝 Casual Senior Peer</option>
+          </select>
+          <button onclick="testPersonaVoice()" class="ui-btn btn-glass" style="padding: 6px 12px; font-size: 11.5px;" title="Listen to a voice preview">
+            <span>▶️</span>
+            <span>Test Voice</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main 2-Column Voice Studio Layout -->
+      <div class="grid">
+        
+        <!-- Left Column: Interactive Voice / Chat Dialogue Console (Col 7) -->
+        <div class="col-7">
+          <div class="card voice-dialogue-card">
+            
+            <!-- Dialogue Header -->
+            <div style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 14px; border-bottom: 1px solid var(--card-border);">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div style="width: 10px; height: 10px; border-radius: 50%; background: #10b981; box-shadow: 0 0 8px #10b981;"></div>
+                <strong style="font-size: 15px; font-weight: 700;">Live Speech Stream & Dialogue Ledger</strong>
+              </div>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span id="speechStateIndicator" style="font-size: 11px; color: #059669; font-weight: 600;">● Micro-Acoustics Ready</span>
+              </div>
+            </div>
+
+            <!-- Dialogue Messages Stream (Scrollable) -->
+            <div id="chatMessages" style="flex: 1 1 0; min-height: 0; max-height: 100%; overflow-y: auto; overflow-x: hidden; padding: 14px 6px; scroll-behavior: smooth;">
+              <div class="chat-bubble-wrap">
+                <div class="chat-avatar ai">🎓</div>
+                <div class="chat-bubble bubble-assistant">
+                  Hello Alex! I am your <strong>CampusLife Voice Assistant</strong>. I am wired directly into your local database.
+                  <br><br><strong>Try speaking or typing:</strong>
+                  <br>• 💤 <em>"I had 8 hours of sleep and I'm in a low stress mood"</em> ➔ <strong>Directly logs your vitals</strong>
+                  <br>• 📚 <em>"What tasks are due today?"</em> ➔ <strong>Reads Academic Ledger</strong>
+                  <br>• 💸 <em>"Spent 250 on study snacks"</em> ➔ <strong>Logs to Expense Manager</strong>
+                  <br>• 🌴 <em>"Plan trip to Goa with 5000 budget"</em> ➔ <strong>Checks Exam Conflicts</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fast Quick-Action Voice Chips -->
+            <div style="display: flex; gap: 6px; overflow-x: auto; padding: 8px 0 10px 0; border-top: 1px solid var(--card-border);">
+              <button onclick="sendQuickPrompt('I had 8 hours of sleep and I am in a low stress mood. log this thing into my health and vitals.')" class="voice-chip">
+                <span>💤</span>
+                <span>Log 8h Sleep & Great Mood</span>
+              </button>
+              <button onclick="sendQuickPrompt('What tasks do I have due today?')" class="voice-chip">
+                <span>📚</span>
+                <span>Check Today's Tasks</span>
+              </button>
+              <button onclick="sendQuickPrompt('What is my total spending this month?')" class="voice-chip">
+                <span>💳</span>
+                <span>Check Spending</span>
+              </button>
+              <button onclick="sendQuickPrompt('How is my sleep and stress level looking?')" class="voice-chip">
+                <span>🧘</span>
+                <span>Inspect Health Status</span>
+              </button>
+            </div>
+
+            <!-- Live Speech Audio Waveform Banner -->
+            <div id="voiceWaveVisualizer" style="background: rgba(37, 99, 235, 0.06); border: 1px solid rgba(37, 99, 235, 0.2); border-radius: 12px; padding: 10px 14px; margin-bottom: 10px; display: none; align-items: center; justify-content: space-between;">
+              <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="mic-btn-container recording" style="width: 22px; height: 22px;">
+                  <div class="mic-ripple-ring" style="width: 22px; height: 22px;"></div>
+                  <span style="font-size: 14px; position: relative; z-index: 2;">🎙️</span>
+                </div>
+                <span id="voiceWaveStatus" style="font-size: 12px; font-weight: 700; color: var(--primary);">Listening to voice... Speak now</span>
+              </div>
+              <div style="display: flex; gap: 3px; align-items: flex-end; height: 16px;">
+                <div style="width: 3px; height: 8px; background: var(--primary); border-radius: 2px; animation: bounce 0.6s infinite alternate;"></div>
+                <div style="width: 3px; height: 14px; background: var(--primary); border-radius: 2px; animation: bounce 0.8s infinite alternate;"></div>
+                <div style="width: 3px; height: 10px; background: var(--primary); border-radius: 2px; animation: bounce 0.5s infinite alternate;"></div>
+                <div style="width: 3px; height: 16px; background: var(--primary); border-radius: 2px; animation: bounce 0.7s infinite alternate;"></div>
+                <div style="width: 3px; height: 7px; background: var(--primary); border-radius: 2px; animation: bounce 0.9s infinite alternate;"></div>
+              </div>
+            </div>
+
+            <!-- Input Bar with Tactile Mic & Send Button -->
+            <div style="display: flex; gap: 10px; align-items: center; padding-top: 6px;">
+              <div class="mic-btn-container" id="micBtnWrap">
+                <div class="mic-ripple-ring"></div>
+                <div class="mic-ripple-ring"></div>
+                <button id="micBtn" onclick="toggleVoiceSTT()" class="btn-mic" title="Speak via Microphone (Live Speech-to-Text)">
+                  🎙️
+                </button>
+              </div>
+
+              <input type="text" id="voiceInput" placeholder="Speak with microphone or type command..." class="input-control" style="margin-bottom: 0; height: 48px; border-radius: 14px;" onkeydown="if(event.key==='Enter') sendMessage()">
+              
+              <button onclick="sendMessage()" class="ui-btn btn-primary" style="height: 48px; padding: 0 20px; border-radius: 14px; font-weight: 700;">
+                <span>Send</span>
+                <span>➤</span>
+              </button>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- Right Column: 3D Voice Orb, Vitals Sync & Studio Controls (Col 5) -->
+        <div class="col-5">
+          
+          <!-- Card 1: 3D Interactive Neural Voice Core (Three.js WebGL) -->
+          <div class="voice-orb-card" style="margin-bottom: 20px;">
+            <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 16px;">🔮</span>
+                <strong style="font-size: 14px;">3D Neural Voice Core</strong>
+              </div>
+              <span id="orbStatusBadge" style="font-size: 10px; padding: 3px 8px; border-radius: 12px; background: rgba(16, 185, 129, 0.15); color: #059669; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.3);">
+                ● Ambient Breathing
+              </span>
+            </div>
+
+            <div id="orbContainer" style="width: 100%; height: 210px; position: relative;">
+              <canvas id="voiceOrbCanvas" class="voice-orb-canvas" style="height: 210px;"></canvas>
+            </div>
+
+            <!-- Dynamic Equalizer Bar -->
+            <div class="equalizer-bar-wrap" id="eqBarWrap">
+              <!-- Dynamically populated by JS -->
+            </div>
+            <div style="font-size: 11px; color: var(--text-muted); margin-top: 6px; text-align: center;">
+              Drag orb to rotate in 3D • Reacts to your microphone speech in real-time
+            </div>
+          </div>
+
+          <!-- Card 2: Live Synced Health & Vitals Ledger Status -->
+          <div class="card" style="margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 16px;">🧘</span>
+                <strong style="font-size: 14px;">Database Health & Vitals Status</strong>
+              </div>
+              <button onclick="refreshVitalsStatus()" class="ui-btn btn-glass" style="font-size: 11px; padding: 4px 8px;">
+                🔄 Refresh
+              </button>
+            </div>
+
+            <div class="telemetry-item">
+              <span>Today's Logged Rest:</span>
+              <strong id="liveSleepStatus">Checking...</strong>
+            </div>
+            <div class="telemetry-item">
+              <span>Current Stress Level:</span>
+              <strong id="liveStressStatus">Checking...</strong>
+            </div>
+            <div class="telemetry-item">
+              <span>Today's Log Date:</span>
+              <strong id="liveLogDate">Checking...</strong>
+            </div>
+
+            <div id="liveNotesNotice" style="font-size: 11.5px; color: var(--primary); background: rgba(37, 99, 235, 0.06); padding: 8px 12px; border-radius: 10px; border: 1px solid rgba(37, 99, 235, 0.2); line-height: 1.4; display: none;">
+              <!-- Live note snippet -->
+            </div>
+          </div>
+
+          <!-- Card 3: Speech Audio Settings Studio -->
+          <div class="card">
+            <h3 style="font-size: 14px; font-weight: 700; margin-bottom: 12px; display: flex; align-items: center; gap: 8px;">
+              <span>🎛️</span>
+              <span>Audio Synthesis & Speech Controls</span>
+            </h3>
+
+            <div style="margin-bottom: 12px;">
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                <span style="color: var(--text-muted);">Voice Speech Rate:</span>
+                <span id="speechRateLabel" style="font-weight: 700; color: var(--primary);">1.05x</span>
+              </div>
+              <input type="range" id="speechRateSlider" min="0.8" max="1.4" step="0.05" value="1.05" style="width: 100%; accent-color: var(--primary);" oninput="updateSpeechSettings()">
+            </div>
+
+            <div style="margin-bottom: 14px;">
+              <div style="display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px;">
+                <span style="color: var(--text-muted);">Voice Pitch Modulation:</span>
+                <span id="speechPitchLabel" style="font-weight: 700; color: var(--primary);">1.00</span>
+              </div>
+              <input type="range" id="speechPitchSlider" min="0.8" max="1.2" step="0.05" value="1.00" style="width: 100%; accent-color: var(--primary);" oninput="updateSpeechSettings()">
+            </div>
+
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--text-main); cursor: pointer;">
+              <input type="checkbox" id="autoSpeakCheckbox" checked style="accent-color: var(--primary);">
+              <span>Automatically speak voice replies with Browser Neural TTS</span>
+            </label>
+          </div>
+
+          <!-- Card 4: Phone Calls & Mobile Ring Station (Autonomous Co-Pilot Ringing) -->
+          <div class="card" style="margin-top: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 16px;">📞</span>
+                <strong style="font-size: 14px;">Phone Calls & Mobile Ring Station</strong>
+              </div>
+              <span id="mobileStandbyBadge" style="font-size: 10px; padding: 3px 8px; border-radius: 10px; background: rgba(16, 185, 129, 0.15); color: #059669; font-weight: 700; border: 1px solid rgba(16, 185, 129, 0.3);">
+                0 Phones Armed
+              </span>
+            </div>
+
+            <p style="font-size: 11.5px; color: var(--text-muted); line-height: 1.5; margin-bottom: 12px;">
+              Pair your smartphone in standby mode. When study deadlines expire or burnout is detected, your phone will physically ring and vibrate with an authentic incoming call.
+            </p>
+
+            <!-- Links Pill Box -->
+            <div style="background: var(--row-bg); border: 1px solid var(--card-border); border-radius: 12px; padding: 10px 12px; margin-bottom: 12px;">
+              <div style="font-size: 11px; font-weight: 700; color: var(--primary); margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
+                <span>🌐 Public Link (Mobile Data / Wi-Fi):</span>
+                <button onclick="copyMobileCallLink('public')" style="background: none; border: none; font-size: 10.5px; color: var(--primary); cursor: pointer; text-decoration: underline;">Copy</button>
+              </div>
+              <div id="mobilePublicLinkDisplay" style="font-family: monospace; font-size: 11px; color: var(--text-main); word-break: break-all; margin-bottom: 8px;">
+                https://dbe2e99f0a18b0.lhr.life/call
+              </div>
+              
+              <div style="font-size: 11px; font-weight: 700; color: var(--text-muted); margin-bottom: 4px; display: flex; justify-content: space-between; align-items: center;">
+                <span>📶 Local Wi-Fi Link:</span>
+                <button onclick="copyMobileCallLink('local')" style="background: none; border: none; font-size: 10.5px; color: var(--text-muted); cursor: pointer; text-decoration: underline;">Copy</button>
+              </div>
+              <div id="mobileLocalLinkDisplay" style="font-family: monospace; font-size: 11px; color: var(--text-muted); word-break: break-all;">
+                http://172.20.169.152:8000/call
+              </div>
+            </div>
+
+            <!-- Action Buttons Grid -->
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 10px;">
+              <button onclick="ringMobilePhoneNow()" class="ui-btn btn-primary" style="padding: 9px 12px; font-size: 12px; justify-content: center; background: linear-gradient(135deg, #ef4444, #dc2626); border-color: #ef4444; color: #fff;">
+                <span>🔔</span>
+                <span>Ring Phone Now</span>
+              </button>
+              <button onclick="sendMobileLinkToTelegram()" class="ui-btn btn-glass" style="padding: 9px 12px; font-size: 12px; justify-content: center;">
+                <span>📲</span>
+                <span>Send to Telegram</span>
+              </button>
+            </div>
+
+            <div style="display: flex; gap: 8px;">
+              <a id="openCallBtn" href="/call" target="_blank" class="ui-btn btn-glass" style="flex: 1; padding: 8px 12px; font-size: 11.5px; justify-content: center; text-decoration: none; color: var(--text-main);">
+                <span>📱</span>
+                <span>Open Screen (/call)</span>
+              </a>
+              <button onclick="toggleCallQR()" class="ui-btn btn-glass" style="padding: 8px 12px; font-size: 11.5px;">
+                <span>📷</span>
+                <span>QR Code</span>
+              </button>
+            </div>
+
+            <!-- Expandable QR Code Container -->
+            <div id="callQRWrap" style="display: none; margin-top: 12px; text-align: center; padding: 12px; background: #fff; border-radius: 12px;">
+              <img id="callQRImg" src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://dbe2e99f0a18b0.lhr.life/call" alt="Scan with mobile" style="width: 140px; height: 140px; display: block; margin: 0 auto;">
+              <div style="font-size: 11px; color: #334155; margin-top: 6px; font-weight: 600;">Point phone camera to open on mobile</div>
+            </div>
+
+            <!-- Feedback Notice -->
+            <div id="mobileCallNotice" style="display: none; margin-top: 10px; font-size: 11px; padding: 8px 10px; border-radius: 8px; text-align: center;"></div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Unified Shell Controller -->
+  <script src="/static/shared-shell.js"></script>
+
+  <!-- Voice Assistant Logic & 3D WebGL Scene -->
+  <script>
+    const API_HEADERS = {
+      'Authorization': 'Bearer user_1',
+      'Content-Type': 'application/json'
+    };
+
+    let activeConversationId = null;
+    let isListening = false;
+    let isSpeaking = false;
+    let recognition = null;
+    let audioVoiceMuted = false;
+
+    // ================= 3D NEURAL VOICE ORB (Three.js) =================
+    let orbScene, orbCamera, orbRenderer, voiceCoreMesh, voiceShellMesh, stardustGroup;
+    let voiceCoreMat, voiceShellMat;
+    let isDraggingOrb = false, prevMouseX = 0, prevMouseY = 0;
+    let orbClock = 0;
+
+    function init3DVoiceOrb() {
+      const canvas = document.getElementById('voiceOrbCanvas');
+      const container = document.getElementById('orbContainer');
+      if (!canvas || !container || !window.THREE) return;
+
+      const width = container.clientWidth || 360;
+      const height = container.clientHeight || 210;
+
+      orbScene = new THREE.Scene();
+      orbCamera = new THREE.PerspectiveCamera(45, width / height, 1, 1000);
+      orbCamera.position.z = 170;
+
+      orbRenderer = new THREE.WebGLRenderer({ canvas: canvas, alpha: true, antialias: true });
+      orbRenderer.setSize(width, height);
+      orbRenderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+      // Lighting
+      const amb = new THREE.AmbientLight(0xffffff, 1.2);
+      orbScene.add(amb);
+
+      const pLight1 = new THREE.PointLight(0x2563eb, 2.5, 400);
+      pLight1.position.set(50, 70, 80);
+      orbScene.add(pLight1);
+
+      const pLight2 = new THREE.PointLight(0x38bdf8, 2.0, 400);
+      pLight2.position.set(-50, -70, 60);
+      orbScene.add(pLight2);
+
+      const orbMasterGroup = new THREE.Group();
+      orbScene.add(orbMasterGroup);
+
+      // Core Luminous Sphere
+      voiceCoreMat = new THREE.MeshStandardMaterial({
+        color: 0x2563eb,
+        roughness: 0.15,
+        metalness: 0.85,
+        emissive: 0x1d4ed8,
+        emissiveIntensity: 0.45,
+        wireframe: false
+      });
+      const coreGeo = new THREE.IcosahedronGeometry(36, 3);
+      voiceCoreMesh = new THREE.Mesh(coreGeo, voiceCoreMat);
+      orbMasterGroup.add(voiceCoreMesh);
+
+      // Wireframe Protective Resonator Shell
+      voiceShellMat = new THREE.MeshBasicMaterial({
+        color: 0x38bdf8,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.4
+      });
+      const shellGeo = new THREE.IcosahedronGeometry(45, 2);
+      voiceShellMesh = new THREE.Mesh(shellGeo, voiceShellMat);
+      orbMasterGroup.add(voiceShellMesh);
+
+      // Celestial Orbit Particles
+      stardustGroup = new THREE.Group();
+      const stardustGeo = new THREE.BufferGeometry();
+      const count = 180;
+      const positions = new Float32Array(count * 3);
+      for (let i = 0; i < count; i++) {
+        const radius = 55 + Math.random() * 25;
+        const theta = Math.random() * Math.PI * 2;
+        const phi = (Math.random() - 0.5) * Math.PI * 0.8;
+        positions[i * 3] = radius * Math.cos(theta) * Math.cos(phi);
+        positions[i * 3 + 1] = radius * Math.sin(phi);
+        positions[i * 3 + 2] = radius * Math.sin(theta) * Math.cos(phi);
+      }
+      stardustGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      const stardustMat = new THREE.PointsMaterial({
+        color: 0x60a5fa,
+        size: 2.2,
+        transparent: true,
+        opacity: 0.8
+      });
+      const particles = new THREE.Points(stardustGeo, stardustMat);
+      stardustGroup.add(particles);
+      orbMasterGroup.add(stardustGroup);
+
+      // Mouse drag controls
+      container.addEventListener('mousedown', (e) => {
+        isDraggingOrb = true;
+        prevMouseX = e.clientX;
+        prevMouseY = e.clientY;
+      });
+      window.addEventListener('mouseup', () => { isDraggingOrb = false; });
+      window.addEventListener('mousemove', (e) => {
+        if (!isDraggingOrb) return;
+        const dx = e.clientX - prevMouseX;
+        const dy = e.clientY - prevMouseY;
+        orbMasterGroup.rotation.y += dx * 0.009;
+        orbMasterGroup.rotation.x += dy * 0.009;
+        prevMouseX = e.clientX;
+        prevMouseY = e.clientY;
+      });
+
+      window.addEventListener('resize', () => {
+        const w = container.clientWidth || 360;
+        const h = container.clientHeight || 210;
+        orbCamera.aspect = w / h;
+        orbCamera.updateProjectionMatrix();
+        orbRenderer.setSize(w, h);
+      });
+
+      function animateOrb() {
+        requestAnimationFrame(animateOrb);
+        orbClock += 0.016;
+
+        if (!isDraggingOrb) {
+          orbMasterGroup.rotation.y += isListening ? 0.02 : (isSpeaking ? 0.015 : 0.005);
+        }
+
+        // Pulse scale based on speech state
+        let pulseFreq = isListening ? 4.5 : (isSpeaking ? 3.5 : 1.8);
+        let pulseAmp = isListening ? 0.12 : (isSpeaking ? 0.09 : 0.04);
+        let currentScale = 1.0 + Math.sin(orbClock * pulseFreq) * pulseAmp;
+        voiceCoreMesh.scale.set(currentScale, currentScale, currentScale);
+
+        voiceShellMesh.rotation.y -= 0.008;
+        voiceShellMesh.rotation.z += 0.004;
+        stardustGroup.rotation.y += 0.003;
+
+        orbRenderer.render(orbScene, orbCamera);
+      }
+      animateOrb();
+    }
+
+    // ================= DYNAMIC AUDIO EQUALIZER BARS =================
+    const EQ_BAR_COUNT = 24;
+    function initEqualizer() {
+      const wrap = document.getElementById('eqBarWrap');
+      if (!wrap) return;
+      wrap.innerHTML = '';
+      for (let i = 0; i < EQ_BAR_COUNT; i++) {
+        const bar = document.createElement('div');
+        bar.className = 'eq-bar';
+        bar.id = 'eqBar_' + i;
+        wrap.appendChild(bar);
+      }
+    }
+
+    function animateEqualizerLoop() {
+      requestAnimationFrame(animateEqualizerLoop);
+      const isVoiceActive = isListening || isSpeaking;
+      for (let i = 0; i < EQ_BAR_COUNT; i++) {
+        const bar = document.getElementById('eqBar_' + i);
+        if (!bar) continue;
+        if (isVoiceActive) {
+          const randHeight = Math.floor(Math.random() * 28) + 6;
+          bar.style.height = randHeight + 'px';
+          bar.classList.add('active');
+        } else {
+          bar.style.height = '6px';
+          bar.classList.remove('active');
+        }
+      }
+    }
+
+    // ================= SPEECH RECOGNITION (STT) =================
+    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = false;
+      recognition.lang = 'en-US';
+
+      recognition.onstart = () => {
+        isListening = true;
+        document.getElementById('micBtn').classList.add('active-recording');
+        document.getElementById('micBtnWrap').classList.add('recording');
+        document.getElementById('voiceInput').placeholder = 'Listening... Speak now';
+        document.getElementById('voiceWaveVisualizer').style.display = 'flex';
+        document.getElementById('voiceWaveStatus').innerText = '🎙️ Listening to your voice... Speak now';
+        document.getElementById('speechStateIndicator').innerText = '● Listening to User Microphone...';
+        document.getElementById('speechStateIndicator').style.color = '#dc2626';
+        document.getElementById('orbStatusBadge').innerText = '● Speech Active: Listening';
+        document.getElementById('orbStatusBadge').style.color = '#dc2626';
+      };
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById('voiceInput').value = transcript;
+        resetListeningState();
+        sendMessage();
+      };
+
+      recognition.onerror = () => { resetListeningState(); };
+      recognition.onend = () => { resetListeningState(); };
+    }
+
+    function resetListeningState() {
+      isListening = false;
+      document.getElementById('micBtn').classList.remove('active-recording');
+      document.getElementById('micBtnWrap').classList.remove('recording');
+      document.getElementById('voiceInput').placeholder = 'Speak with microphone or type command...';
+      document.getElementById('voiceWaveVisualizer').style.display = 'none';
+      document.getElementById('speechStateIndicator').innerText = '● Micro-Acoustics Ready';
+      document.getElementById('speechStateIndicator').style.color = '#059669';
+      document.getElementById('orbStatusBadge').innerText = '● Ambient Breathing';
+      document.getElementById('orbStatusBadge').style.color = '#059669';
+    }
+
+    function toggleVoiceSTT() {
+      if (!recognition) {
+        alert('Web Speech API is not supported in this browser. Please type your message.');
+        return;
+      }
+      if (isListening) {
+        recognition.stop();
+      } else {
+        recognition.start();
+      }
+    }
+
+    // ================= TEXT-TO-SPEECH (TTS) =================
+    function speakText(text) {
+      if (audioVoiceMuted) return;
+      if (!document.getElementById('autoSpeakCheckbox').checked) return;
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.rate = parseFloat(document.getElementById('speechRateSlider').value || 1.05);
+        utter.pitch = parseFloat(document.getElementById('speechPitchSlider').value || 1.0);
+
+        isSpeaking = true;
+        document.getElementById('speechStateIndicator').innerText = '🔊 Synthesizing Neural Audio...';
+        document.getElementById('speechStateIndicator').style.color = 'var(--primary)';
+        document.getElementById('orbStatusBadge').innerText = '● Speech Active: Speaking';
+        document.getElementById('orbStatusBadge').style.color = 'var(--primary)';
+
+        utter.onend = () => {
+          isSpeaking = false;
+          document.getElementById('speechStateIndicator').innerText = '● Micro-Acoustics Ready';
+          document.getElementById('speechStateIndicator').style.color = '#059669';
+          document.getElementById('orbStatusBadge').innerText = '● Ambient Breathing';
+          document.getElementById('orbStatusBadge').style.color = '#059669';
+        };
+        utter.onerror = () => { isSpeaking = false; };
+        window.speechSynthesis.speak(utter);
+      }
+    }
+
+    function toggleAudioMute() {
+      audioVoiceMuted = !audioVoiceMuted;
+      const icon = document.getElementById('audioIcon');
+      const label = document.getElementById('audioLabel');
+      if (audioVoiceMuted) {
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+        icon.innerText = '🔇';
+        label.innerText = 'Voice Audio: MUTED';
+      } else {
+        icon.innerText = '🔊';
+        label.innerText = 'Voice Audio: ON';
+      }
+    }
+
+    function updateSpeechSettings() {
+      const rate = document.getElementById('speechRateSlider').value;
+      const pitch = document.getElementById('speechPitchSlider').value;
+      document.getElementById('speechRateLabel').innerText = rate + 'x';
+      document.getElementById('speechPitchLabel').innerText = parseFloat(pitch).toFixed(2);
+    }
+
+    function testPersonaVoice() {
+      const p = document.getElementById('personaSelect').value;
+      let sample = "Hello Alex! I am your Empathetic Mentor. How can I assist you with your studies and wellness today?";
+      if (p === 'PRODUCTIVITY_COACH') {
+        sample = "Let's lock in! What high-yield assignment or study task are we completing right now?";
+      } else if (p === 'CAMPUS_PEER') {
+        sample = "Hey Alex! Don't sweat the coursework too much. Let's get these tasks organized so you can relax.";
+      }
+      speakText(sample);
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/\n/g, "<br>");
+    }
+
+    // ================= CHAT HISTORY & PERSISTENCE =================
+    async function loadChatHistory() {
+      const chat = document.getElementById('chatMessages');
+      try {
+        const res = await fetch('/api/voice/chat/history', { headers: API_HEADERS });
+        if (!res.ok) return;
+        const data = await res.json();
+        activeConversationId = data.conversation_id;
+
+        if (!data.messages || data.messages.length === 0) {
+          chat.innerHTML = `
+            <div class="chat-bubble-wrap">
+              <div class="chat-avatar ai">🎓</div>
+              <div class="chat-bubble bubble-assistant">
+                Hello Alex! I am your <strong>CampusLife Voice Assistant</strong>. I am wired directly into your local database.
+                <br><br><strong>Try speaking or typing:</strong>
+                <br>• 💤 <em>"I had 8 hours of sleep and I'm in a low stress mood"</em> ➔ <strong>Directly logs your vitals</strong>
+                <br>• 📚 <em>"What tasks are due today?"</em> ➔ <strong>Reads Academic Ledger</strong>
+                <br>• 💸 <em>"Spent 250 on study snacks"</em> ➔ <strong>Logs to Expense Manager</strong>
+                <br>• 🌴 <em>"Plan trip to Goa with 5000 budget"</em> ➔ <strong>Checks Exam Conflicts</strong>
+              </div>
+            </div>`;
+          return;
+        }
+
+        chat.innerHTML = data.messages.map(m => {
+          if (m.role === 'USER') {
+            return `
+              <div class="chat-bubble-wrap user">
+                <div class="chat-avatar usr">👤</div>
+                <div class="chat-bubble bubble-user">${escapeHtml(m.content)}</div>
+              </div>`;
+          } else {
+            let metaNotice = '';
+            if (m.tool_name) {
+              const isMut = ['log_expense', 'set_budget', 'create_task', 'create_trip', 'log_sleep', 'complete_task', 'extend_task_deadline', 'update_task_priority'].includes(m.tool_name);
+              metaNotice = `
+                <div style="display: flex; align-items: center; gap: 6px; font-size: 10px; margin-bottom: 6px; flex-wrap: wrap;">
+                  <span style="padding: 2px 7px; border-radius: 6px; background: ${isMut ? 'rgba(16, 185, 129, 0.15)' : 'rgba(37, 99, 235, 0.15)'}; color: ${isMut ? '#059669' : 'var(--primary)'}; font-weight: 700; border: 1px solid ${isMut ? 'rgba(16, 185, 129, 0.3)' : 'rgba(37, 99, 235, 0.3)'};">
+                    💾 ${isMut ? 'Database Logged: ' : ''}[${escapeHtml(m.tool_name)}]
+                  </span>
+                </div>`;
+            }
+            return `
+              <div class="chat-bubble-wrap">
+                <div class="chat-avatar ai">🎓</div>
+                <div class="chat-bubble bubble-assistant">
+                  ${metaNotice}
+                  ${escapeHtml(m.content)}
+                  <button class="btn-replay-audio" onclick="speakText('${escapeHtml(m.content).replace(/'/g, "\\'")}')" title="Replay voice audio">🔊</button>
+                </div>
+              </div>`;
+          }
+        }).join('');
+        scrollToBottom();
+      } catch (err) {
+        console.error('Error loading chat history:', err);
+      }
+    }
+
+    function scrollToBottom() {
+      const chat = document.getElementById('chatMessages');
+      if (chat) {
+        setTimeout(() => {
+          chat.scrollTop = chat.scrollHeight;
+        }, 50);
+      }
+    }
+
+    async function clearChatHistory() {
+      if (!confirm('Clear all conversation messages in this session?')) return;
+      try {
+        await fetch('/api/voice/chat/history', { method: 'DELETE', headers: API_HEADERS });
+        loadChatHistory();
+        if (typeof showToast === 'function') showToast('Dialogue ledger cleared', '🗑️');
+      } catch(e) {
+        console.error('Error clearing chat history:', e);
+      }
+    }
+
+    // ================= SEND VOICE MESSAGE =================
+    async function sendMessage() {
+      const input = document.getElementById('voiceInput');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+
+      const chat = document.getElementById('chatMessages');
+      chat.innerHTML += `
+        <div class="chat-bubble-wrap user">
+          <div class="chat-avatar usr">👤</div>
+          <div class="chat-bubble bubble-user">${escapeHtml(text)}</div>
+        </div>`;
+      scrollToBottom();
+
+      const persona = document.getElementById('personaSelect').value;
+      try {
+        const res = await fetch('/api/voice/message', {
+          method: 'POST',
+          headers: API_HEADERS,
+          body: JSON.stringify({
+            conversation_id: activeConversationId,
+            message: text,
+            persona: persona
+          })
+        });
+        const data = await res.json();
+        if (data.conversation_id) activeConversationId = data.conversation_id;
+
+        let metaNotice = '';
+        const isMutation = ['log_expense', 'set_budget', 'create_task', 'create_trip', 'log_sleep', 'complete_task', 'extend_task_deadline', 'update_task_priority'].includes(data.tool_executed);
+
+        metaNotice = `
+          <div style="display: flex; align-items: center; gap: 8px; font-size: 10px; margin-bottom: 6px; flex-wrap: wrap;">
+            <span style="padding: 2px 7px; border-radius: 6px; background: rgba(37, 99, 235, 0.12); color: var(--primary); font-weight: 700;">🤖 ${data.engine || 'Local Neural LLM'}</span>
+            <span style="color: #059669; font-weight: 600;">⚡ ${data.latency_ms || 1.2}ms</span>
+            ${data.tool_executed ? `<span style="padding: 2px 7px; border-radius: 6px; background: ${isMutation ? 'rgba(16, 185, 129, 0.15)' : 'rgba(245, 158, 11, 0.15)'}; color: ${isMutation ? '#059669' : '#d97706'}; font-weight: 700; border: 1px solid ${isMutation ? 'rgba(16, 185, 129, 0.3)' : 'rgba(245, 158, 11, 0.3)'};">💾 Direct Database Logged: [${data.tool_executed}]</span>` : ''}
+          </div>
+        `;
+
+        chat.innerHTML += `
+          <div class="chat-bubble-wrap">
+            <div class="chat-avatar ai">🎓</div>
+            <div class="chat-bubble bubble-assistant">
+              ${metaNotice}
+              ${escapeHtml(data.assistant_reply)}
+              <button class="btn-replay-audio" onclick="speakText('${escapeHtml(data.assistant_reply).replace(/'/g, "\\'")}')" title="Replay voice audio">🔊</button>
+            </div>
+          </div>
+        `;
+        scrollToBottom();
+        speakText(data.assistant_reply);
+
+        if (isMutation) {
+          if (typeof showToast === 'function') {
+            showToast(`Direct Database Logged: [${data.tool_executed}]`, '💾');
+          }
+          if (data.tool_executed === 'log_sleep') {
+            refreshVitalsStatus();
+          }
+        }
+
+      } catch (err) {
+        chat.innerHTML += `
+          <div class="chat-bubble-wrap">
+            <div class="chat-avatar ai">🎓</div>
+            <div class="chat-bubble bubble-assistant" style="color: #dc2626;">
+              Error connecting to voice agent: ${escapeHtml(err.message)}
+            </div>
+          </div>`;
+      }
+    }
+
+    function sendQuickPrompt(prompt) {
+      document.getElementById('voiceInput').value = prompt;
+      sendMessage();
+    }
+
+    // ================= LIVE DATABASE HEALTH VITALS MONITOR =================
+    async function refreshVitalsStatus() {
+      try {
+        const res = await fetch('/api/health/dashboard', { headers: API_HEADERS });
+        if (!res.ok) return;
+        const data = await res.json();
+        
+        const base = data.baseline_7d || {};
+        const stress = data.stress_prediction || {};
+        
+        document.getElementById('liveSleepStatus').innerText = (base.avg_sleep_hours ? base.avg_sleep_hours.toFixed(1) + ' hrs' : '7.5 hrs');
+        document.getElementById('liveStressStatus').innerText = stress.category ? `${stress.category} (${(stress.stress_score * 100).toFixed(0)}%)` : 'LOW (20%)';
+        document.getElementById('liveLogDate').innerText = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+        const notice = document.getElementById('liveNotesNotice');
+        if (stress.recommendation) {
+          notice.style.display = 'block';
+          notice.innerHTML = `<strong>💡 Advisory:</strong> ${escapeHtml(stress.recommendation)}`;
+        }
+      } catch (err) {
+        console.error('Error fetching live vitals status:', err);
+      }
+    }
+
+    // ================= MOBILE PHONE STATION & TELEPHONY =================
+    let currentMobileInfo = null;
+
+    async function refreshMobileStatus() {
+      try {
+        const res = await fetch('/api/voice/mobile/info');
+        if (!res.ok) return;
+        currentMobileInfo = await res.json();
+
+        // Update Links
+        if (currentMobileInfo.tunnel_url) {
+          document.getElementById('mobilePublicLinkDisplay').innerText = currentMobileInfo.tunnel_url;
+          const qrImg = document.getElementById('callQRImg');
+          if (qrImg) qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(currentMobileInfo.tunnel_url)}`;
+        }
+        if (currentMobileInfo.local_url) {
+          document.getElementById('mobileLocalLinkDisplay').innerText = currentMobileInfo.local_url;
+        }
+
+        // Update Phone Standby Badge
+        const count = currentMobileInfo.connected_phones || 0;
+        const badge = document.getElementById('mobileStandbyBadge');
+        if (count > 0) {
+          badge.innerText = `● ${count} Phone${count > 1 ? 's' : ''} Armed`;
+          badge.style.background = 'rgba(16, 185, 129, 0.2)';
+          badge.style.color = '#10b981';
+          badge.style.borderColor = 'rgba(16, 185, 129, 0.5)';
+        } else {
+          badge.innerText = '0 Phones Armed';
+          badge.style.background = 'rgba(239, 68, 68, 0.12)';
+          badge.style.color = '#f87171';
+          badge.style.borderColor = 'rgba(239, 68, 68, 0.3)';
+        }
+      } catch (err) {
+        console.error('Error fetching mobile info:', err);
+      }
+    }
+
+    async function ringMobilePhoneNow() {
+      const notice = document.getElementById('mobileCallNotice');
+      notice.style.display = 'block';
+      notice.style.background = 'rgba(37, 99, 235, 0.1)';
+      notice.style.color = 'var(--primary)';
+      notice.innerText = '⚡ Broadcasting incoming call signal to mobile...';
+
+      try {
+        const res = await fetch('/api/voice/calls/mobile-ring', {
+          method: 'POST',
+          headers: API_HEADERS,
+          body: JSON.stringify({
+            greeting: "Hello Manas! This is your CampusLife student co-pilot. I am checking in to see if you would like me to adjust tonight's study tasks."
+          })
+        });
+        const data = await res.json();
+        const ringingCount = data.phones_ringing || 0;
+        if (ringingCount > 0) {
+          notice.style.background = 'rgba(16, 185, 129, 0.15)';
+          notice.style.color = '#059669';
+          notice.innerHTML = `✅ <strong>Ringing ${ringingCount} connected phone(s)!</strong> Check your phone screen now.`;
+        } else {
+          notice.style.background = 'rgba(245, 158, 11, 0.12)';
+          notice.style.color = '#d97706';
+          notice.innerHTML = `⚠️ Broadcast sent! No phones currently armed in standby. Tap <strong>'Open Screen'</strong> to connect your phone.`;
+        }
+        refreshMobileStatus();
+      } catch (err) {
+        notice.style.background = 'rgba(239, 68, 68, 0.15)';
+        notice.style.color = '#dc2626';
+        notice.innerText = `❌ Error triggering call: ${err.message}`;
+      }
+    }
+
+    async function sendMobileLinkToTelegram() {
+      const notice = document.getElementById('mobileCallNotice');
+      notice.style.display = 'block';
+      notice.style.background = 'rgba(37, 99, 235, 0.1)';
+      notice.style.color = 'var(--primary)';
+      notice.innerText = '📤 Sending call link to Telegram...';
+
+      try {
+        const res = await fetch('/api/voice/mobile/share', { method: 'POST' });
+        const data = await res.json();
+        if (data.telegram_sent) {
+          notice.style.background = 'rgba(16, 185, 129, 0.15)';
+          notice.style.color = '#059669';
+          notice.innerHTML = `✅ <strong>Link sent to Telegram!</strong> Open your phone's Telegram to tap and enter standby mode.`;
+        } else {
+          notice.style.background = 'rgba(245, 158, 11, 0.12)';
+          notice.style.color = '#d97706';
+          const reason = data.telegram_error ? data.telegram_error : 'Local ISP network timeout to api.telegram.org.';
+          notice.innerHTML = `⚠️ <strong>Telegram Blocked by Local ISP:</strong> ${reason}<br><span style="font-weight: 500;">Direct phone access is ready: scan the <strong>QR Code</strong> below or tap <strong>Copy Link</strong> to open on your phone!</span>`;
+        }
+      } catch (err) {
+        notice.style.background = 'rgba(239, 68, 68, 0.15)';
+        notice.style.color = '#dc2626';
+        notice.innerText = `Error: ${err.message}`;
+      }
+    }
+
+    function copyMobileCallLink(type) {
+      const link = type === 'public' 
+        ? document.getElementById('mobilePublicLinkDisplay').innerText 
+        : document.getElementById('mobileLocalLinkDisplay').innerText;
+      
+      navigator.clipboard.writeText(link.trim()).then(() => {
+        const notice = document.getElementById('mobileCallNotice');
+        notice.style.display = 'block';
+        notice.style.background = 'rgba(16, 185, 129, 0.15)';
+        notice.style.color = '#059669';
+        notice.innerText = `📋 Copied ${type.toUpperCase()} link to clipboard! Paste it on your mobile browser.`;
+        setTimeout(() => { notice.style.display = 'none'; }, 4000);
+      }).catch(() => {
+        alert("Copied: " + link);
+      });
+    }
+
+    function toggleCallQR() {
+      const wrap = document.getElementById('callQRWrap');
+      wrap.style.display = wrap.style.display === 'none' ? 'block' : 'none';
+    }
+
+    // Initialize Components
+    window.addEventListener('DOMContentLoaded', () => {
+      init3DVoiceOrb();
+      initEqualizer();
+      animateEqualizerLoop();
+      loadChatHistory();
+      refreshVitalsStatus();
+      refreshMobileStatus();
+      setInterval(refreshMobileStatus, 3000);
+    });
+  </script>
+</body>
+</html>

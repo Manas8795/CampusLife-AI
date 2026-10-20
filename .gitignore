@@ -1,0 +1,44 @@
+# Environments & Credentials
+.env
+.env.*
+!.env.example
+
+# Python cache & compiled files
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# Testing & Code Coverage
+.pytest_cache/
+.coverage
+coverage.json
+htmlcov/
+.tox/
+
+# Local databases, binaries & temporary tunnels
+*.db
+campuslife.db
+cloudflared.exe
+backend/app/tunnel_url.txt
+
+# IDEs & System Files
+.idea/
+.agents/.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Dependencies & Build
+node_modules/
+dist/
+build/
+*.egg-info/

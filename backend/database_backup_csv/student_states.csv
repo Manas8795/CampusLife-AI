@@ -1,0 +1,2 @@
+id,user_id,academic_summary,wellness_summary,financial_summary,travel_summary,compound_risk_level,compound_risk_score,updated_at
+1,1,"{""total_tasks"": 1, ""pending_tasks"": 0, ""overdue_tasks"": 1, ""productivity_risk"": ""LOW"", ""completion_rate"": 0.0}","{""avg_sleep_7d"": 6.34, ""avg_study_7d"": 5.6, ""stress_level"": ""LOW""}","{""budget_spent"": 4100.0, ""budget_limit"": 14100.0, ""utilization_pct"": 29.1, ""days_runway"": 17}","{""upcoming_trips_count"": 5, ""conflicts_count"": 1}",LOW,0.35,2026-10-07 20:30:18.055865
