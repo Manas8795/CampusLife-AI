@@ -192,9 +192,10 @@ class LogSleepCommand(IntentCommand):
 
     def execute(self, user_id: int, params: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         logger.info("command_execute", extra={"command": self.tool_name, "user_id": user_id})
+        sleep_val = float(params.get("sleep_hours") if params.get("sleep_hours") is not None else params.get("hours", 7.0))
         return campuslife_tools.log_sleep(
             user_id,
-            hours=float(params.get("sleep_hours", 7.0)),
+            sleep_hours=sleep_val,
             mood=int(params.get("mood", 4)),
             energy=int(params.get("energy", 4)),
             notes=params.get("notes", ""),

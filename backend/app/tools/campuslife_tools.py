@@ -526,8 +526,18 @@ def update_task_priority(user_id: int, query_text: str = "", priority: str = "HI
             "message": f"Updated priority of '{target_task.title}' to {priority}."
         }
 
-def log_sleep(user_id: int, sleep_hours: float, mood: int = 4, energy: int = 4, notes: str = "Logged via AI Voice Assistant") -> Dict[str, Any]:
+def log_sleep(
+    user_id: int,
+    sleep_hours: float = 7.0,
+    mood: int = 4,
+    energy: int = 4,
+    notes: str = "Logged via AI Voice Assistant",
+    hours: Optional[float] = None,
+    **kwargs: Any
+) -> Dict[str, Any]:
     """Logs or updates the student's sleep and wellness record in real-time."""
+    if hours is not None:
+        sleep_hours = float(hours)
     from backend.app.health.schemas import HealthLogCreate
     with SessionLocal() as db:
         record = HealthService.log_wellness(db, user_id, HealthLogCreate(
